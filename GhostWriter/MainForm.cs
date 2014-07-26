@@ -644,9 +644,10 @@ namespace GhostWriter
         public class AppData
         {
             public bool SetInitialCodeOnLoad { get; set; }
+            public bool PresentationMode { get; set; }
+
             [XmlElement("RecentFile")]
             public List<string> RecentFiles { get; set; }
-            public bool PresentationMode { get; set; }
         }
 
         private void SaveAppData()
