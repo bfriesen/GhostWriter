@@ -61,15 +61,21 @@
             this.tabPresentation = new System.Windows.Forms.TabPage();
             this.lblStepNumberA = new System.Windows.Forms.Label();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.lblNotes = new System.Windows.Forms.Label();
             this.txtNotes = new System.Windows.Forms.RichTextBox();
-            this.txtFinishedCode = new System.Windows.Forms.RichTextBox();
+            this.rbFinishedCode = new System.Windows.Forms.RadioButton();
+            this.rbStartingCode = new System.Windows.Forms.RadioButton();
+            this.txtExpectedCode = new System.Windows.Forms.RichTextBox();
             this.tabAutoTyping = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.txtNotes2 = new System.Windows.Forms.RichTextBox();
+            this.lblNotes2 = new System.Windows.Forms.Label();
+            this.lblKeyboardData = new System.Windows.Forms.Label();
             this.txtGhostKeyboardData = new System.Windows.Forms.RichTextBox();
             this.commandContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.txtInitialCode = new System.Windows.Forms.RichTextBox();
             this.lblStepNumberB = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.btnPushToApplication = new System.Windows.Forms.Button();
             menuStrip = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             openDemoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -354,6 +360,7 @@
             this.tabControl.Size = new System.Drawing.Size(900, 552);
             this.tabControl.TabIndex = 7;
             this.toolTip.SetToolTip(this.tabControl, "Presentation Notes");
+            this.tabControl.TabIndexChanged += new System.EventHandler(this.TabControl_TabIndexChanged);
             // 
             // tabPresentation
             // 
@@ -388,14 +395,29 @@
             // 
             // splitContainer.Panel1
             // 
+            this.splitContainer.Panel1.Controls.Add(this.lblNotes);
             this.splitContainer.Panel1.Controls.Add(this.txtNotes);
             // 
             // splitContainer.Panel2
             // 
-            this.splitContainer.Panel2.Controls.Add(this.txtFinishedCode);
+            this.splitContainer.Panel2.Controls.Add(this.btnPushToApplication);
+            this.splitContainer.Panel2.Controls.Add(this.rbFinishedCode);
+            this.splitContainer.Panel2.Controls.Add(this.rbStartingCode);
+            this.splitContainer.Panel2.Controls.Add(this.txtExpectedCode);
             this.splitContainer.Size = new System.Drawing.Size(900, 504);
             this.splitContainer.SplitterDistance = 252;
             this.splitContainer.TabIndex = 5;
+            // 
+            // lblNotes
+            // 
+            this.lblNotes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNotes.Location = new System.Drawing.Point(10, 3);
+            this.lblNotes.Name = "lblNotes";
+            this.lblNotes.Size = new System.Drawing.Size(889, 20);
+            this.lblNotes.TabIndex = 6;
+            this.lblNotes.Text = "Notes";
             // 
             // txtNotes
             // 
@@ -404,30 +426,53 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNotes.ContextMenuStrip = this.highlightingContextMenuStrip;
             this.txtNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtNotes.Location = new System.Drawing.Point(5, 0);
+            this.txtNotes.Location = new System.Drawing.Point(5, 26);
             this.txtNotes.Name = "txtNotes";
-            this.txtNotes.Size = new System.Drawing.Size(891, 250);
+            this.txtNotes.Size = new System.Drawing.Size(891, 224);
             this.txtNotes.TabIndex = 0;
             this.txtNotes.Text = "";
             this.toolTip.SetToolTip(this.txtNotes, "Presentation Notes");
             this.txtNotes.TextChanged += new System.EventHandler(this.TxtNotesTextChanged);
             this.txtNotes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxKeyDown);
             // 
-            // txtFinishedCode
+            // rbFinishedCode
             // 
-            this.txtFinishedCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.rbFinishedCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rbFinishedCode.Location = new System.Drawing.Point(135, 3);
+            this.rbFinishedCode.Name = "rbFinishedCode";
+            this.rbFinishedCode.Size = new System.Drawing.Size(121, 23);
+            this.rbFinishedCode.TabIndex = 2;
+            this.rbFinishedCode.Text = "Finished Code";
+            this.rbFinishedCode.UseVisualStyleBackColor = true;
+            // 
+            // rbStartingCode
+            // 
+            this.rbStartingCode.Checked = true;
+            this.rbStartingCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rbStartingCode.Location = new System.Drawing.Point(13, 3);
+            this.rbStartingCode.Name = "rbStartingCode";
+            this.rbStartingCode.Size = new System.Drawing.Size(116, 23);
+            this.rbStartingCode.TabIndex = 1;
+            this.rbStartingCode.TabStop = true;
+            this.rbStartingCode.Text = "Starting Code";
+            this.rbStartingCode.UseVisualStyleBackColor = true;
+            this.rbStartingCode.CheckedChanged += new System.EventHandler(this.rbCodeStartingOrFinished_CheckedChanged);
+            // 
+            // txtExpectedCode
+            // 
+            this.txtExpectedCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFinishedCode.ContextMenuStrip = this.highlightingContextMenuStrip;
-            this.txtFinishedCode.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFinishedCode.Location = new System.Drawing.Point(5, 0);
-            this.txtFinishedCode.Name = "txtFinishedCode";
-            this.txtFinishedCode.Size = new System.Drawing.Size(891, 244);
-            this.txtFinishedCode.TabIndex = 0;
-            this.txtFinishedCode.Text = "";
-            this.toolTip.SetToolTip(this.txtFinishedCode, "Code after this step has executed");
-            this.txtFinishedCode.TextChanged += new System.EventHandler(this.TxtFinishedCodeTextChanged);
-            this.txtFinishedCode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxKeyDown);
+            this.txtExpectedCode.ContextMenuStrip = this.highlightingContextMenuStrip;
+            this.txtExpectedCode.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtExpectedCode.Location = new System.Drawing.Point(5, 29);
+            this.txtExpectedCode.Name = "txtExpectedCode";
+            this.txtExpectedCode.Size = new System.Drawing.Size(891, 215);
+            this.txtExpectedCode.TabIndex = 0;
+            this.txtExpectedCode.Text = "";
+            this.toolTip.SetToolTip(this.txtExpectedCode, "Code after this step has executed");
+            this.txtExpectedCode.TextChanged += new System.EventHandler(this.TxtExpectedCodeTextChanged);
+            this.txtExpectedCode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxKeyDown);
             // 
             // tabAutoTyping
             // 
@@ -452,14 +497,53 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.txtGhostKeyboardData);
+            this.splitContainer1.Panel1.Controls.Add(this.txtNotes2);
+            this.splitContainer1.Panel1.Controls.Add(this.lblNotes2);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.txtInitialCode);
+            this.splitContainer1.Panel2.Controls.Add(this.lblKeyboardData);
+            this.splitContainer1.Panel2.Controls.Add(this.txtGhostKeyboardData);
             this.splitContainer1.Size = new System.Drawing.Size(900, 504);
             this.splitContainer1.SplitterDistance = 252;
             this.splitContainer1.TabIndex = 6;
+            // 
+            // txtNotes2
+            // 
+            this.txtNotes2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNotes2.ContextMenuStrip = this.highlightingContextMenuStrip;
+            this.txtNotes2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtNotes2.Location = new System.Drawing.Point(5, 26);
+            this.txtNotes2.Name = "txtNotes2";
+            this.txtNotes2.Size = new System.Drawing.Size(891, 224);
+            this.txtNotes2.TabIndex = 8;
+            this.txtNotes2.Text = "";
+            this.toolTip.SetToolTip(this.txtNotes2, "Presentation Notes");
+            this.txtNotes2.TextChanged += new System.EventHandler(this.TxtNotesTextChanged);
+            // 
+            // lblNotes2
+            // 
+            this.lblNotes2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblNotes2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNotes2.Location = new System.Drawing.Point(10, 3);
+            this.lblNotes2.Name = "lblNotes2";
+            this.lblNotes2.Size = new System.Drawing.Size(887, 20);
+            this.lblNotes2.TabIndex = 7;
+            this.lblNotes2.Text = "Notes";
+            // 
+            // lblKeyboardData
+            // 
+            this.lblKeyboardData.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblKeyboardData.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblKeyboardData.Location = new System.Drawing.Point(13, 3);
+            this.lblKeyboardData.Name = "lblKeyboardData";
+            this.lblKeyboardData.Size = new System.Drawing.Size(880, 20);
+            this.lblKeyboardData.TabIndex = 8;
+            this.lblKeyboardData.Text = "Keyboard Data";
             // 
             // txtGhostKeyboardData
             // 
@@ -468,9 +552,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGhostKeyboardData.ContextMenuStrip = this.commandContextMenuStrip;
             this.txtGhostKeyboardData.Font = new System.Drawing.Font("Consolas", 12F);
-            this.txtGhostKeyboardData.Location = new System.Drawing.Point(5, 0);
+            this.txtGhostKeyboardData.Location = new System.Drawing.Point(5, 29);
             this.txtGhostKeyboardData.Name = "txtGhostKeyboardData";
-            this.txtGhostKeyboardData.Size = new System.Drawing.Size(890, 250);
+            this.txtGhostKeyboardData.Size = new System.Drawing.Size(891, 215);
             this.txtGhostKeyboardData.TabIndex = 2;
             this.txtGhostKeyboardData.Text = "";
             this.toolTip.SetToolTip(this.txtGhostKeyboardData, "Ghost Keyboard Data");
@@ -481,20 +565,6 @@
             this.commandContextMenuStrip.Name = "commandContextMenuStrip";
             this.commandContextMenuStrip.Size = new System.Drawing.Size(61, 4);
             // 
-            // txtInitialCode
-            // 
-            this.txtInitialCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtInitialCode.Font = new System.Drawing.Font("Consolas", 12F);
-            this.txtInitialCode.Location = new System.Drawing.Point(5, 0);
-            this.txtInitialCode.Name = "txtInitialCode";
-            this.txtInitialCode.Size = new System.Drawing.Size(890, 244);
-            this.txtInitialCode.TabIndex = 3;
-            this.txtInitialCode.Text = "";
-            this.toolTip.SetToolTip(this.txtInitialCode, "Initial Code");
-            this.txtInitialCode.TextChanged += new System.EventHandler(this.TxtInitialCodeTextChanged);
-            // 
             // lblStepNumberB
             // 
             this.lblStepNumberB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -504,6 +574,17 @@
             this.lblStepNumberB.Name = "lblStepNumberB";
             this.lblStepNumberB.Size = new System.Drawing.Size(886, 20);
             this.lblStepNumberB.TabIndex = 2;
+            // 
+            // btnPushToApplication
+            // 
+            this.btnPushToApplication.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btnPushToApplication.Location = new System.Drawing.Point(262, 3);
+            this.btnPushToApplication.Name = "btnPushToApplication";
+            this.btnPushToApplication.Size = new System.Drawing.Size(106, 23);
+            this.btnPushToApplication.TabIndex = 8;
+            this.btnPushToApplication.Text = "Push to Application";
+            this.btnPushToApplication.UseVisualStyleBackColor = true;
+            this.btnPushToApplication.Click += new System.EventHandler(this.BtnPushToApplication_Click);
             // 
             // MainForm
             // 
@@ -563,14 +644,13 @@
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Label lblStepNumberA;
         private System.Windows.Forms.RichTextBox txtNotes;
-        private System.Windows.Forms.RichTextBox txtFinishedCode;
+        private System.Windows.Forms.RichTextBox txtExpectedCode;
         private System.Windows.Forms.TabPage tabAutoTyping;
         private System.Windows.Forms.Label lblStepNumberB;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ContextMenuStrip commandContextMenuStrip;
         private System.Windows.Forms.RichTextBox txtGhostKeyboardData;
-        private System.Windows.Forms.RichTextBox txtInitialCode;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noSoundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem typingSpeedToolStripMenuItem;
@@ -579,6 +659,13 @@
         private System.Windows.Forms.ToolStripMenuItem uncheckedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setInitialCodeOnLoadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setTargetApplicationToolStripMenuItem;
+        private System.Windows.Forms.Label lblNotes;
+        private System.Windows.Forms.RadioButton rbFinishedCode;
+        private System.Windows.Forms.RadioButton rbStartingCode;
+        private System.Windows.Forms.Label lblNotes2;
+        private System.Windows.Forms.RichTextBox txtNotes2;
+        private System.Windows.Forms.Label lblKeyboardData;
+        private System.Windows.Forms.Button btnPushToApplication;
 
     }
 }

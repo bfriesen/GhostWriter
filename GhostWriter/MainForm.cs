@@ -42,6 +42,7 @@ namespace GhostWriter
         private void CreateNew()
         {
             _currentDemoFileName = null;
+            Text = "New Demo - Ghost Writer";
             reloadDemoToolStripMenuItem.Visible = false;
 
             _demo = new Demo
@@ -76,6 +77,7 @@ namespace GhostWriter
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
                 _currentDemoFileName = dialog.FileName;
+                Text = Path.GetFileNameWithoutExtension(_currentDemoFileName) + " - Ghost Writer";
                 reloadDemoToolStripMenuItem.Visible = true;
 
                 LoadDemo(true);
@@ -85,7 +87,8 @@ namespace GhostWriter
 
                 if (setInitialCodeOnLoadToolStripMenuItem.Checked)
                 {
-                    if (!string.IsNullOrWhiteSpace(_demo.InitialCode))
+                    if (!string.IsNullOrWhiteSpace(_demo.InitialCode)
+                        && _targetApplication != IntPtr.Zero)
                     {
                         SetForegroundWindow(_targetApplication);
                         GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode));
@@ -175,7 +178,7 @@ namespace GhostWriter
 
                 if (_demo.Steps.Count == 0)
                 {
-                    txtFinishedCode.Clear();
+                    txtExpectedCode.Clear();
                     txtNotes.Clear();
                     txtGhostKeyboardData.Clear();
                 }
@@ -265,22 +268,31 @@ namespace GhostWriter
 
         private void TxtNotesTextChanged(object sender, EventArgs e)
         {
-            _demo.Steps[_currentIndex].Notes = txtNotes.Rtf;
+            _demo.Steps[_currentIndex].Notes = ((RichTextBox)sender).Rtf;
         }
 
-        private void TxtFinishedCodeTextChanged(object sender, EventArgs e)
+        private void TxtExpectedCodeTextChanged(object sender, EventArgs e)
         {
-            _demo.Steps[_currentIndex].FinishedCode = txtFinishedCode.Rtf;
+            if (rbStartingCode.Checked)
+            {
+                if (_currentIndex == 0)
+                {
+                    _demo.InitialCode = txtExpectedCode.Text;
+                }
+                else
+                {
+                    _demo.Steps[_currentIndex - 1].FinishedCode = txtExpectedCode.Rtf;
+                }
+            }
+            else
+            {
+                _demo.Steps[_currentIndex].FinishedCode = txtExpectedCode.Rtf;
+            }
         }
 
         private void TxtGhostKeyboardDataTextChanged(object sender, EventArgs e)
         {
             _demo.Steps[_currentIndex].GhostKeyboardData = txtGhostKeyboardData.Text;
-        }
-
-        private void TxtInitialCodeTextChanged(object sender, EventArgs e)
-        {
-            _demo.InitialCode = txtNotes.Text;
         }
 
         private void LoadDemo(bool setTargetApplication)
@@ -302,10 +314,6 @@ namespace GhostWriter
 
                 btnExecute.Enabled = _demo.Steps.Count > 0 && _targetApplication != IntPtr.Zero;
                 btnNext.Enabled = btnLast.Enabled = _demo.Steps.Count > 1;
-
-                txtInitialCode.TextChanged -= TxtInitialCodeTextChanged;
-                txtInitialCode.Text = _demo.InitialCode;
-                txtInitialCode.TextChanged += TxtInitialCodeTextChanged;
             }
             catch (Exception ex)
             {
@@ -410,7 +418,7 @@ namespace GhostWriter
             var textBox = owner.SourceControl as RichTextBox;
             textBox.SelectionBackColor = textBox.BackColor;
 
-            if (ReferenceEquals(textBox, txtFinishedCode))
+            if (ReferenceEquals(textBox, txtExpectedCode))
             {
                 _demo.Steps[_currentIndex].FinishedCode = textBox.Rtf;
             }
@@ -432,21 +440,48 @@ namespace GhostWriter
 
         private void LoadCurrentStep()
         {
-            txtFinishedCode.TextChanged -= TxtFinishedCodeTextChanged;
+            LoadNotes();
+
+            txtExpectedCode.TextChanged -= TxtExpectedCodeTextChanged;
             txtGhostKeyboardData.TextChanged -= TxtGhostKeyboardDataTextChanged;
-            txtNotes.TextChanged -= TxtNotesTextChanged;
 
             btnNext.Enabled = btnLast.Enabled = _currentIndex < _demo.Steps.Count - 1;
             btnPrevious.Enabled = btnFirst.Enabled = _currentIndex > 0;
-            txtFinishedCode.Rtf = _demo.Steps[_currentIndex].FinishedCode;
-            txtNotes.Rtf = _demo.Steps[_currentIndex].Notes;
+
+            if (rbStartingCode.Checked)
+            {
+                if (_currentIndex == 0)
+                {
+                    txtExpectedCode.Text = _demo.InitialCode;
+                }
+                else
+                {
+                    txtExpectedCode.Rtf = _demo.Steps[_currentIndex - 1].FinishedCode;
+                }
+            }
+            else
+            {
+                txtExpectedCode.Rtf = _demo.Steps[_currentIndex].FinishedCode;
+            }
+
             txtGhostKeyboardData.Text = _demo.Steps[_currentIndex].GhostKeyboardData;
             lblStepNumberA.Text = "Step " + _demo.Steps[_currentIndex].Number;
             lblStepNumberB.Text = "Step " + _demo.Steps[_currentIndex].Number;
 
-            txtFinishedCode.TextChanged += TxtFinishedCodeTextChanged;
+            txtExpectedCode.TextChanged += TxtExpectedCodeTextChanged;
             txtGhostKeyboardData.TextChanged += TxtGhostKeyboardDataTextChanged;
+        }
+
+        private void LoadNotes()
+        {
+            txtNotes.TextChanged -= TxtNotesTextChanged;
+            txtNotes2.TextChanged -= TxtNotesTextChanged;
+
+            txtNotes.Rtf = _demo.Steps[_currentIndex].Notes;
+            txtNotes2.Rtf = _demo.Steps[_currentIndex].Notes;
+
             txtNotes.TextChanged += TxtNotesTextChanged;
+            txtNotes2.TextChanged += TxtNotesTextChanged;
         }
 
         private IList<IntPtr> GetTargetWindows()
@@ -536,5 +571,39 @@ namespace GhostWriter
 
         private const int GwHwndnext = 2;
         private const int GwChild = 5;
+
+        private void rbCodeStartingOrFinished_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbStartingCode.Checked)
+            {
+                if (_currentIndex == 0)
+                {
+                    txtExpectedCode.Text = _demo.InitialCode;
+                }
+                else
+                {
+                    txtExpectedCode.Rtf = _demo.Steps[_currentIndex - 1].FinishedCode;
+                }
+            }
+            else
+            {
+                txtExpectedCode.Rtf = _demo.Steps[_currentIndex].FinishedCode;
+            }
+        }
+
+        private void TabControl_TabIndexChanged(object sender, EventArgs e)
+        {
+            LoadNotes();
+        }
+
+        private void BtnPushToApplication_Click(object sender, EventArgs e)
+        {
+            if (_targetApplication != IntPtr.Zero)
+            {
+                SetForegroundWindow(_targetApplication);
+                GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(txtExpectedCode.Text));
+                SetForegroundWindow(Handle);
+            }
+        }
     }
 }
