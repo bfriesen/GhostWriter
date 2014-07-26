@@ -1,0 +1,3407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Demo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TargetApplicationTitle>Microsoft Visual Studio</TargetApplicationTitle>
+  <InitialCode>using System;
+using System.Linq;
+
+namespace MonadDemo
+{
+class Program
+{
+static void Main(string[] args)
+{
+}
+}
+}</InitialCode>
+  <Step Number="1">
+    <GhostKeyboardData>[GotoLine 1][Fast]
+
+[/Fast][Up][Up][Fast]// 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.[/Fast]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red255\green255\blue0;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) \highlight3 Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf4\highlight2\par
+\par
+\cf5 using\cf4  System;\par
+\cf5 using\cf4  System.Linq;\par
+\par
+\cf5 namespace\cf4  MonadDemo\par
+\{\par
+    \cf5 class\cf4  \cf6 Program\cf4\par
+    \{\par
+        \cf5 static\cf4  \cf5 void\cf4  Main(\cf5 string\cf4 [] args)\highlight3\par
+\highlight2         \{\par
+        \}\par
+    \}\par
+\}\cf1\highlight3\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}{\f1\fnil Consolas;}}
+{\colortbl ;\red255\green255\blue255;\red0\green128\blue0;}
+\viewkind4\uc1\pard\highlight1\lang1033\f0\fs24 (By this point, I should have already gone through my TWO slides and introduced myself)\par
+\par
+-The rest of the talk consists of code. But don't worry, I'm a really fast typist, and I NEVER make mistakes.\par
+-Who here has, until now, never heard of monads?\par
+-Who has heard of them, but has no idea what they are?\par
+-Who knows what they are, but hasn't used them in production?\par
+-How many are .NET developers? (keep your hands up)\par
+-Anyone actually used monads in production? If you put your hand down, you're probably lying.\par
+\par
+-Let's start off with the definition of a monad, according to the source of all knowledge, Wikipedia.\par
+\par
+\cf2\f1\fs18 Formally, a monad consists of a type constructor M and two operations, bind and return.\cf0\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="2">
+    <GhostKeyboardData>[GotoLine 1][End][Fast]
+//
+// 2) The operations must fulfill several properties to allow the correct composition of monadic functions
+//    (i.e. functions that use values from the monad as their arguments or return value).[/Fast]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue0;\red0\green0\blue255;\red43\green145\blue175;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) \highlight4 The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1\highlight2 //    \highlight4 (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\par
+\cf5\highlight2 using\cf3  System;\par
+\cf5 using\cf3  System.Linq;\par
+\par
+\cf5 namespace\cf3  MonadDemo\par
+\{\par
+    \cf5 class\cf3  \cf6 Program\cf3\par
+    \{\par
+        \cf5 static\cf3  \cf5 void\cf3  Main(\cf5 string\cf3 [] args)\par
+        \{\par
+        \}\par
+    \}\par
+\}\cf1\highlight4\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}{\f2\fnil\fcharset0 Microsoft Sans Serif;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 The operations must fulfill several properties to allow the correct composition of monadic functions\f1  \f0 (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf0\highlight0\f2\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="3">
+    <GhostKeyboardData>[GotoLine 4][End][Fast]
+//
+// 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.[/Fast]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue0;\red0\green0\blue255;\red43\green145\blue175;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) \highlight4 In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\highlight2\par
+\cf5 using\cf3  System;\par
+\cf5 using\cf3  System.Linq;\highlight4\par
+\highlight2\par
+\cf5 namespace\cf3  MonadDemo\par
+\{\par
+    \cf5 class\cf3  \cf6 Program\cf3\par
+    \{\par
+        \cf5 static\cf3  \cf5 void\cf3  Main(\cf5 string\cf3 [] args)\par
+        \{\par
+        \}\par
+    \}\par
+\}\cf1\highlight4\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Microsoft Sans Serif;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 In most contexts, a value of type M a can be thought of as an action that returns a value of type a.\cf0\highlight0\f1\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="4">
+    <GhostKeyboardData>[GotoLine 6][End][Fast]
+//
+// 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.[/Fast]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue0;\red0\green0\blue255;\red43\green145\blue175;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) \highlight4 The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\highlight2\par
+\cf5 using\cf3  System;\par
+\cf5 using\cf3  System.Linq;\par
+\par
+\cf5 namespace\cf3  MonadDemo\par
+\{\par
+    \cf5 class\cf3  \cf6 Program\cf3\par
+    \{\par
+        \cf5 static\cf3  \cf5 void\cf3  Main(\cf5 string\cf3 [] args)\par
+        \{\par
+        \}\par
+    \}\par
+\}\cf1\highlight4\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Microsoft Sans Serif;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 The return operation takes a value from a plain type a and puts it into a monadic container of type M a.\cf0\highlight0\f1\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="5">
+    <GhostKeyboardData>[GotoLine 8][End][Fast]
+//
+// 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic
+//    value of type 'M b', effectively creating an action that chooses the next action based on the results of
+//    previous actions.[/Fast]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue0;\red0\green0\blue255;\red43\green145\blue175;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) \highlight4 The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1\highlight2 //    \highlight4 value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1\highlight2 //    \highlight4 previous actions.\cf3\par
+\highlight2\par
+\cf5 using\cf3  System;\par
+\cf5 using\cf3  System.Linq;\par
+\par
+\cf5 namespace\cf3  MonadDemo\par
+\{\par
+    \cf5 class\cf3  \cf6 Program\cf3\par
+    \{\par
+        \cf5 static\cf3  \cf5 void\cf3  Main(\cf5 string\cf3 [] args)\par
+        \{\par
+        \}\par
+    \}\par
+\}\cf1\highlight4\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}{\f2\fnil\fcharset0 Microsoft Sans Serif;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 The bind operation chains a monadic value of type M a with a function of type a -&gt; M b to create a monadic\f1  \f0 value of type M b, effectively creating an action that chooses the next action based on the results of\f1  \f0 previous actions.\cf3\par
+\cf0\highlight0\f2\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="6">
+    <GhostKeyboardData>[GotoLine 18][End]
+[Up]
+public class Monad&lt;T&gt;
+{
+
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red255\green255\blue0;\red43\green145\blue175;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+\highlight5     \cf4 public\cf3  \cf4 class\cf3  \cf6 Monad\cf3 &lt;T&gt;\par
+    \{\par
+\par
+    \}\highlight2\par
+\par
+    \cf4 class\cf3  \cf6 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}{\f1\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;}
+\viewkind4\uc1\pard\lang1033\f0\fs24 Let's address at the first point.\par
+\par
+\cf1\highlight2\f1\fs18 Formally, a monad consists of a type constructor M and two operations, bind and return.\cf0\highlight0\f0\fs24\par
+\par
+As I understand it, a 'type constructor' in .NET is analogous to a generic type.\par
+Let's create a generic type.\par
+\par
+(after executing)\par
+\par
+That takes care of the first part of the requirement - we'll come back to the other parts later...\par
+}
+</Notes>
+  </Step>
+  <Step Number="7">
+    <GhostKeyboardData>[GotoLine 21][End]private readonly T _value;
+
+public Monad(T value)
+{
+_value = value;
+}
+
+public T Value
+{
+get { return _value; }
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+\highlight6         \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\highlight2\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}{\f1\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;}
+\viewkind4\uc1\pard\lang1033\f0\fs24 Let's look at the third point\par
+\par
+\cf1\highlight2\f1\fs18 In most contexts, a value of type M a can be thought of as an action that returns a value of type a.\cf0\highlight0\f0\fs24\par
+\par
+I don't know about you, but this screams 'PROPERTY' to me.\par
+So... let's create a 'Value' property...\par
+\par
+(after executing)\par
+\par
+And that's the third point.\par
+}
+</Notes>
+  </Step>
+  <Step Number="8">
+    <GhostKeyboardData>[GotoLine 37][End]
+var m = new Monad&lt;int&gt;(128);
+Console.WriteLine("The value of m is {0}.", m.Value);
+
+Console.Write("Press any key to continue...");
+Console.ReadKey(true);</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+\highlight6             \cf4 var\cf3  m = \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;(128);\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\highlight2\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 Let's see how we can use our monad...\par
+\par
+(after executing)\par
+\par
+Underwhelming, isn't it? :-P\par
+}
+</Notes>
+  </Step>
+  <Step Number="9">
+    <GhostKeyboardData>[GotoLine 1]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;(128);\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}{\f1\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;}
+\viewkind4\uc1\pard\f0\fs24 So let's look at the fourth point:\par
+\par
+\cf1\highlight2\f1\fs18 The return operation takes a value from a plain type a and puts it into a monadic container of type M a.\cf0\highlight0\f0\fs24\par
+\par
+I'd say we're already fulfilling this point. And by doing so, we knocked out another part of the first point.\par
+\par
+\cf1\highlight2\f1\fs18 Formally, a monad consists of a type constructor M and two operations, bind and return.\cf0\highlight0\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="10">
+    <GhostKeyboardData>[GotoLine 32][End]
+
+public static class MonadEx
+{
+public static Monad&lt;T&gt; ToMonad&lt;T&gt;(this T value)
+{
+return new Monad&lt;T&gt;(value);
+}
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+\highlight6     \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+    \}\highlight2\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;(128);\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 But there's something here that I don't like. I don't like the way that constructors on generic types kinda sucks. Let's make it easier to use with an extension method.\par
+}
+</Notes>
+  </Step>
+  <Step Number="11">
+    <GhostKeyboardData>[SelectText 46,21 0,19][Pause 3]128.ToMonad()</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = \highlight6 128.ToMonad()\highlight2 ;\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 Now we can just call '.ToMonad()' on any value, and the extension method does the rest for us.\par
+}
+</Notes>
+  </Step>
+  <Step Number="12">
+    <GhostKeyboardData>[GotoLine 1]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 Let's revisit the requirements. By my count we've covered 2 2/3.\par
+\par
+In the first requirement, we covered the type constructor part, and the Return method. (we'll do Bind next).\par
+In the third requirement, we covered the "value of type M" by using a property.\par
+In the fourth requirement, we took any arbitrary type and wrapped it in our Monad.\par
+}
+</Notes>
+  </Step>
+  <Step Number="13">
+    <GhostKeyboardData>[GotoLine 39][End]
+
+public static ??? Bind&lt;T&gt;(this Monad&lt;T&gt; monad, ???)</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4\highlight6 public\cf3  \cf4 static\cf3  ??? Bind&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, ???)\highlight2\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="14">
+    <GhostKeyboardData>[SelectText 41,23 0,3][Pause 3]Monad&lt;TResult&gt;</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5\highlight6 Monad\cf3 &lt;TResult&gt;\highlight2  Bind&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, ???)\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="15">
+    <GhostKeyboardData>[SelectText 41,44 0,0], TResult</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T\highlight6 , TResult\highlight2 &gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, ???)\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="16">
+    <GhostKeyboardData>[SelectText 41,76 0,3][Pause 2]Func&lt;T, Monad&lt;TResult&gt;&gt; resultSelector</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5\highlight6 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector\highlight2 )\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="17">
+    <GhostKeyboardData>[GotoLine 41][End]
+{
+return resultSelector(monad.Value);
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+\highlight6         \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\highlight2\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="18">
+    <GhostKeyboardData>[GotoLine 52][End]
+Monad&lt;Type&gt; m2 = m.Bind(x =&gt; x.GetType().ToMonad());
+Console.WriteLine("The type of the original monad is: {0}.", m2.Value);</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;\red255\green255\blue0;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The value of m is \{0\}."\cf3 , m.Value);\par
+\highlight7             \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; m2 = m.Bind(x =&gt; x.GetType().ToMonad());\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The type of the original monad is: \{0\}."\cf3 , m2.Value);\par
+\highlight2\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="19">
+    <GhostKeyboardData>[GotoLine 44][End]
+
+public static Monad&lt;TResult&gt; Bind&lt;T, TResult&gt;(this Monad&lt;T&gt; monad, Func&lt;T, TResult&gt; resultSelector)
+{
+return monad.Bind(m =&gt; resultSelector(m).ToMonad());
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+\highlight6         \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\highlight2\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The value of m is \{0\}."\cf3 , m.Value);\par
+            \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; m2 = m.Bind(x =&gt; x.GetType().ToMonad());\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The type of the original monad is: \{0\}."\cf3 , m2.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 There's something here that I don't like... ToMonad() inside the Bind method.\par
+\par
+Our Bind method takes a monad and a Func&lt;T, Monad&lt;TResult&gt;&gt; because that's what the difinition is.\par
+But there's no reason why we shouldn't be able to add something that makes Bind easier to use.\par
+\par
+Why don't we create it...\par
+}
+</Notes>
+  </Step>
+  <Step Number="20">
+    <GhostKeyboardData>[SelectText 58,53 0,10][Pause 3][Delete 1]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;\red255\green255\blue0;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The value of m is \{0\}."\cf3 , m.Value);\par
+            \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; m2 = m.Bind(x =&gt; x.GetType()); \cf1\highlight7 // Removed .ToMonad()\cf3\highlight2\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The type of the original monad is: \{0\}."\cf3 , m2.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\lang1033\f0\fs24 And now we can remove the ToMonad() call.\par
+\par
+And it does the exact same thing.\par
+}
+</Notes>
+  </Step>
+  <Step Number="21">
+    <GhostKeyboardData>[GotoLine 1]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m = 128.ToMonad();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The value of m is \{0\}."\cf3 , m.Value);\par
+            \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; m2 = m.Bind(x =&gt; x.GetType());\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The type of the original monad is: \{0\}."\cf3 , m2.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="22">
+    <GhostKeyboardData>[SelectText 56,20 0,0]
+[End][Backspace 1]
+.Bind(x =&gt; x.GetType())
+.Bind(x =&gt; new string(x.ToString().Reverse().ToArray()));
+Console.WriteLine("The monad's type, turned backwards is: {0}.", m.Value);[Down][Pause 1][DeleteLine][Pause 1][DeleteLine][Pause 1][DeleteLine]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+\highlight6             \cf4 var\cf3  m =\par
+                128.ToMonad()\par
+                .Bind(x =&gt; x.GetType())\par
+                .Bind(x =&gt; \cf4 new\cf3  \cf4 string\cf3 (x.ToString().Reverse().ToArray()));\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\highlight2\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="23">
+    <GhostKeyboardData>[GotoLine 65][End]
+
+public static class ApplicationExtensions
+{
+public static Monad&lt;Type&gt; ToType&lt;T&gt;(this Monad&lt;T&gt; monad)
+{
+return monad.Bind(m =&gt; m.GetType());
+}
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;\red255\green255\blue0;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                128.ToMonad()\par
+                .Bind(x =&gt; x.GetType())\par
+                .Bind(x =&gt; \cf4 new\cf3  \cf4 string\cf3 (x.ToString().Reverse().ToArray()));\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+\highlight7     \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+    \}\highlight2\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="24">
+    <GhostKeyboardData>[SelectText 58,18 0,22][Pause 2]ToType()</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                128.ToMonad()\par
+                .\highlight6 ToType()\highlight2\par
+                .Bind(x =&gt; \cf4 new\cf3  \cf4 string\cf3 (x.ToString().Reverse().ToArray()));\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+    \}\par
+\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="25">
+    <GhostKeyboardData>[GotoLine 72][End]
+
+public static Monad&lt;string&gt; ToReversedString&lt;T&gt;(this Monad&lt;T&gt; monad)
+{
+return monad.Bind(m =&gt; new string(m.ToString().Reverse().ToArray()));
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;\red255\green255\blue0;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                128.ToMonad()\par
+                .ToType()\par
+                .Bind(x =&gt; \cf4 new\cf3  \cf4 string\cf3 (x.ToString().Reverse().ToArray()));\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+\highlight7         \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\highlight2\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="26">
+    <GhostKeyboardData>[SelectText 59,18 0,55][Pause 2]ToReversedString()</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\lang1033\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                128.ToMonad()\par
+                .ToType()\par
+                .\highlight6 ToReversedString()\highlight2 ;\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24\par
+}
+</Notes>
+  </Step>
+  <Step Number="27">
+    <GhostKeyboardData>[GotoLine 57][SelectTextFromHere 0,13][Pause 1]new Monad&lt;string&gt;(null)</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf4\highlight6 new\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt;(\cf4 null\cf3 )\highlight2\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 Now this is all well and good. But we've done a lot of work just to allow for method chaining.\par
+\par
+What would happen if we did something like this...\par
+\par
+(after execution)\par
+\par
+Obviously we got a null reference exception.\par
+}
+</Notes>
+  </Step>
+  <Step Number="28">
+    <GhostKeyboardData>[GotoLine 42][End]
+[Up]
+if (monad.Value == null)
+{
+return new Monad&lt;TResult&gt;(null);
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4\highlight6 if\cf3  (monad.Value == \cf4 null\cf3 )\par
+            \{\par
+                \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;TResult&gt;(\cf4 null\cf3 );\par
+            \}\par
+\highlight2\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt;(\cf4 null\cf3 )\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\fbidis\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red163\green21\blue21;\red255\green255\blue255;}
+\viewkind4\uc1\pard\ltrpar\f0\fs24 How can we fix this? What if we checked for null in our Bind method and return a monad of type TResult with a null value...\par
+\par
+(execute)\par
+\par
+\cf1\highlight2\f1\fs18 cannot convert from '&lt;null&gt;' to 'TResult'\cf0\highlight0\f0\fs24\par
+\par
+Crap. It doesn't compile. We're gonna have to think about this some more.\par
+}
+</Notes>
+  </Step>
+  <Step Number="29">
+    <GhostKeyboardData>[SelectText 43,13 3,1][Pause 2][CommentLines]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red255\green255\blue0;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+\highlight6             \cf1 //if (monad.Value == null)\cf3\par
+            \cf1 //\{\cf3\par
+            \cf1 //    return new Monad&lt;TResult&gt;(null);\cf3\par
+            \cf1 //\}\cf3\highlight2\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt;(\cf4 null\cf3 )\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf7 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf7 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\fbidis\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\ltrpar\f0\fs24 So the reason why it doesn't compile is because TResult *could* be a value type - and they can't have a null value. And I guess I *could* add some generic constraints on our monad type. But I really don't want to. I *want* to be able to wrap a value type.\par
+}
+</Notes>
+  </Step>
+  <Step Number="30">
+    <GhostKeyboardData>[GotoLine 31][End]
+
+public bool HasValue { get; private set; }[Pause 1][Down 12][Pause 1][SelectTextFromHere 3,0][Pause 1][UncommentLines][Up][Down][Right][Right][Right][Pause 1][SelectTextFromHere 0,19][Pause 1]!monad.HasValue[Pause 5][Down 2][Left 8][SelectTextFromHere 0,24]?????</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  ?????;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt;(\cf4 null\cf3 )\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\}\cf1\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 What if...\par
+\par
+We just asked the monad whether it had a value...\par
+Then we could... ask it whether it had a value...\par
+\par
+But then, what would we return???\par
+}
+</Notes>
+  </Step>
+  <Step Number="31">
+    <GhostKeyboardData>[GotoLine 26][End]
+
+public static Monad&lt;T&gt; None
+{
+get { return ???; }
+}[Pause 5][Down 21][Right 14][Pause 1][SelectTextFromHere 0,5][Pause 2]Monad&lt;TResult&gt;.None</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  ???; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt;(\cf4 null\cf3 )\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 What if we just gave ourselves a "Nothing"? Or a "None"? Something that represents a lack of a value, but is still a valid monad?\par
+\par
+(execute... wait for pause...)\par
+\par
+It could look like this.\par
+\par
+I don't know what it should return yet, but I like it. Now we know what to return here - we'll return 'None'.\par
+\par
+\par
+}
+</Notes>
+  </Step>
+  <Step Number="32">
+    <GhostKeyboardData>[GotoLine 20][End]
+[Up]
+private static readonly Monad&lt;T&gt; _none = new Monad&lt;T&gt;();[Pause 1][Down 11][Left 6][SelectTextFromHere 0,3][Pause 1]_none[Pause 5][Up 8]
+[Up]
+[Pause 2]private Monad()
+{
+HasValue = false;
+}[Pause 5][Down 4][End]
+HasValue = (value != null);</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt;(\cf4 null\cf3 )\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 So what do we *actually* return? How about a singleton instance of our monad?\par
+\par
+(execute, wait for two short pauses)\par
+\par
+And we'll need a default constructor - let's make it private and set HasValue to false.\par
+\par
+And while we're at it, we need to set HasValue to true if the public constructor's 'value' parameter is not null, otherwise false. (Yes, this doesn't make sense for a value type. But, it works.)\par
+}
+</Notes>
+  </Step>
+  <Step Number="33">
+    <GhostKeyboardData />
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf4 new\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt;(\cf4 null\cf3 )\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 This all should work. Let's try running it. Remember that we were passing 'null' in for a 'string' monad.\par
+\par
+(run the application)\par
+\par
+Hmmmmm... that kinda crappy.\par
+}
+</Notes>
+  </Step>
+  <Step Number="34">
+    <GhostKeyboardData>[GotoLine 77][Pause 1][SelectTextFromHere 0,23][Pause 1]Monad&lt;int&gt;.None</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _value; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;.None\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 Let's see what happens if we use a value type with no value. We'll have to use our 'None' method, since passing 'null' in to the public constructor when the type is a value type.\par
+\par
+(execute, then run)\par
+\par
+Still crappy.\par
+}
+</Notes>
+  </Step>
+  <Step Number="35">
+    <GhostKeyboardData>[GotoLine 43][Pause 1][Right 3]
+[Right]
+
+
+[Up 2]if (!HasValue)
+{
+throw new InvalidOperationException("Cannot retrieve value when HasValue is false.");
+}[Down 2][End][Left 2]
+</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3\par
+            \{\par
+                \cf4 if\cf3  (!HasValue)\par
+                \{\par
+                    \cf4 throw\cf3  \cf4 new\cf3  \cf5 InvalidOperationException\cf3 (\cf6 "Cannot retrieve value when HasValue is false."\cf3 );\par
+                \}\par
+                \par
+                \cf4 return\cf3  _value;\par
+            \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;.None\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.Value);\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 I guess it doesn't make sense to get the value of a monad when it doesn't have one. Let's throw an exception if someone tries to do this.\par
+\par
+(execute, then run)\par
+\par
+Good, we have an exception.\par
+}
+</Notes>
+  </Step>
+  <Step Number="36">
+    <GhostKeyboardData>[GotoLine 88][End][Left 9][Pause 3]m.HasValue ? [Pause 1][Right 7] : "No value!"</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3\par
+            \{\par
+                \cf4 if\cf3  (!HasValue)\par
+                \{\par
+                    \cf4 throw\cf3  \cf4 new\cf3  \cf5 InvalidOperationException\cf3 (\cf6 "Cannot retrieve value when HasValue is false."\cf3 );\par
+                \}\par
+                \par
+                \cf4 return\cf3  _value;\par
+            \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;.None\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.HasValue ? m.Value : \cf6 "No value!"\cf3 );\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 So, we'll probably want to check whether it has a value before we access its value now.\par
+\par
+(execute, then run)\par
+\par
+Well, it works. But that's kinda tedious.\par
+}
+</Notes>
+  </Step>
+  <Step Number="37">
+    <GhostKeyboardData>[GotoLine 54][End][Pause 3]
+
+public T GetValue(T defaultValue)
+{
+return HasValue ? _value : defaultValue;
+}</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3\par
+            \{\par
+                \cf4 if\cf3  (!HasValue)\par
+                \{\par
+                    \cf4 throw\cf3  \cf4 new\cf3  \cf5 InvalidOperationException\cf3 (\cf6 "Cannot retrieve value when HasValue is false."\cf3 );\par
+                \}\par
+                \par
+                \cf4 return\cf3  _value;\par
+            \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+\par
+        \cf4 public\cf3  T GetValue(T defaultValue)\par
+        \{\par
+            \cf4 return\cf3  HasValue ? _value : defaultValue;\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;.None\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.HasValue ? m.Value : \cf6 "No value!"\cf3 );\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 Let's give ourselves a method to make safely getting the value easier. How about calling it 'GetValue'?\par
+\par
+(execute)\par
+}
+</Notes>
+  </Step>
+  <Step Number="38">
+    <GhostKeyboardData>[SelectText 93,78 0,34][Pause 3]m.GetValue("No value!")</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3\par
+            \{\par
+                \cf4 if\cf3  (!HasValue)\par
+                \{\par
+                    \cf4 throw\cf3  \cf4 new\cf3  \cf5 InvalidOperationException\cf3 (\cf6 "Cannot retrieve value when HasValue is false."\cf3 );\par
+                \}\par
+                \par
+                \cf4 return\cf3  _value;\par
+            \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+\par
+        \cf4 public\cf3  T GetValue(T defaultValue)\par
+        \{\par
+            \cf4 return\cf3  HasValue ? _value : defaultValue;\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt;.None\par
+                .ToType()\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.GetValue(\cf6 "No value!"\cf3 ));\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+    \}\par
+\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 And now, let's use our new method...\par
+\par
+(execute)\par
+\par
+Ah, very good.\par
+}
+</Notes>
+  </Step>
+  <Step Number="39">
+    <GhostKeyboardData>[GotoLine 110][End]
+
+public static Monad&lt;int&gt; DivideBy(this Monad&lt;int&gt; monad, int divisor)
+{
+return monad.Bind(m =&gt; m / divisor);
+}</GhostKeyboardData>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 We're starting to get useful here. Let's try doing something else with the monad. How about division?\par
+}
+</Notes>
+  </Step>
+  <Step Number="40">
+    <GhostKeyboardData>[GotoLine 90][Pause 1][SelectTextFromHere 0,15][Pause 2]128.ToMonad()
+.DivideBy(4)[Pause 1][SelectTextFromHere 1,0][Pause 2][Delete 1]</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3\par
+            \{\par
+                \cf4 if\cf3  (!HasValue)\par
+                \{\par
+                    \cf4 throw\cf3  \cf4 new\cf3  \cf5 InvalidOperationException\cf3 (\cf6 "Cannot retrieve value when HasValue is false."\cf3 );\par
+                \}\par
+                \par
+                \cf4 return\cf3  _value;\par
+            \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+\par
+        \cf4 public\cf3  T GetValue(T defaultValue)\par
+        \{\par
+            \cf4 return\cf3  HasValue ? _value : defaultValue;\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                128.ToMonad()\par
+                .DivideBy(4)\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.GetValue(\cf6 "No value!"\cf3 ));\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt; DivideBy(\cf4 this\cf3  \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt; monad, \cf4 int\cf3  divisor)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m / divisor);\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 And let's use our new extension method...\par
+\par
+(execute, then run)\par
+\par
+Hey, that's pretty cool.\par
+}
+</Notes>
+  </Step>
+  <Step Number="41">
+    <GhostKeyboardData>[GotoLine 91][End][Pause 2][Left][Pause 1][Backspace 1][Pause 1]0</GhostKeyboardData>
+    <FinishedCode>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil Consolas;}{\f1\fnil\fcharset0 Consolas;}}
+{\colortbl ;\red0\green128\blue0;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue255;\red43\green145\blue175;\red163\green21\blue21;}
+\viewkind4\uc1\pard\cf1\highlight2\f0\fs18 // 1) Formally, a monad consists of a type constructor 'M' and two operations, 'bind' and 'return'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 2) The operations must fulfill several properties to allow the correct composition of monadic functions\cf3\par
+\cf1 //    (i.e. functions that use values from the monad as their arguments or return value).\cf3\par
+\cf1 //\cf3\par
+\cf1 // 3) In most contexts, a value of type 'M a' can be thought of as an action that returns a value of type 'a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 4) The 'return' operation takes a value from a plain type a and puts it into a monadic container of type 'M a'.\cf3\par
+\cf1 //\cf3\par
+\cf1 // 5) The 'bind' operation chains a monadic value of type 'M a' with a function of type 'a -&gt; M b' to create a monadic\cf3\par
+\cf1 //    value of type 'M b', effectively creating an action that chooses the next action based on the results of\cf3\par
+\cf1 //    previous actions.\cf3\par
+\par
+\cf4 using\cf3  System;\par
+\cf4 using\cf3  System.Linq;\par
+\par
+\cf4 namespace\cf3  MonadDemo\par
+\{\par
+    \cf4 public\cf3  \cf4 class\cf3  \cf5 Monad\cf3 &lt;T&gt;\par
+    \{\par
+        \cf4 private\cf3  \cf4 static\cf3  \cf4 readonly\cf3  \cf5 Monad\cf3 &lt;T&gt; _none = \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;();\par
+\par
+        \cf4 private\cf3  \cf4 readonly\cf3  T _value;\par
+\par
+        \cf4 private\cf3  Monad()\par
+        \{\par
+            HasValue = \cf4 false\cf3 ;\par
+        \}\par
+\par
+        \cf4 public\cf3  Monad(T value)\par
+        \{\par
+            _value = value;\par
+            HasValue = (value != \cf4 null\cf3 );\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; None\par
+        \{\par
+            \cf4 get\cf3  \{ \cf4 return\cf3  _none; \}\par
+        \}\par
+\par
+        \cf4 public\cf3  T Value\par
+        \{\par
+            \cf4 get\cf3\par
+            \{\par
+                \cf4 if\cf3  (!HasValue)\par
+                \{\par
+                    \cf4 throw\cf3  \cf4 new\cf3  \cf5 InvalidOperationException\cf3 (\cf6 "Cannot retrieve value when HasValue is false."\cf3 );\par
+                \}\par
+\par
+                \cf4 return\cf3  _value;\par
+            \}\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 bool\cf3  HasValue \{ \cf4 get\cf3 ; \cf4 private\cf3  \cf4 set\cf3 ; \}\par
+\par
+        \cf4 public\cf3  T GetValue(T defaultValue)\par
+        \{\par
+            \cf4 return\cf3  HasValue ? _value : defaultValue;\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 MonadEx\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;T&gt; ToMonad&lt;T&gt;(\cf4 this\cf3  T value)\par
+        \{\par
+            \cf4 return\cf3  \cf4 new\cf3  \cf5 Monad\cf3 &lt;T&gt;(value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, \cf5 Monad\cf3 &lt;TResult&gt;&gt; resultSelector)\par
+        \{\par
+            \cf4 if\cf3  (!monad.HasValue)\par
+            \{\par
+                \cf4 return\cf3  \cf5 Monad\cf3 &lt;TResult&gt;.None;\par
+            \}\par
+\par
+            \cf4 return\cf3  resultSelector(monad.Value);\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;TResult&gt; Bind&lt;T, TResult&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad, \cf5 Func\cf3 &lt;T, TResult&gt; resultSelector)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; resultSelector(m).ToMonad());\par
+        \}\par
+    \}\par
+\par
+    \cf4 class\cf3  \cf5 Program\cf3\par
+    \{\par
+        \cf4 static\cf3  \cf4 void\cf3  Main(\cf4 string\cf3 [] args)\par
+        \{\par
+            \cf4 var\cf3  m =\par
+                128.ToMonad()\par
+                .DivideBy(0)\par
+                .ToReversedString();\par
+            \cf5 Console\cf3 .WriteLine(\cf6 "The monad's type, turned backwards is: \{0\}."\cf3 , m.GetValue(\cf6 "No value!"\cf3 ));\par
+\par
+            \cf5 Console\cf3 .Write(\cf6 "Press any key to continue..."\cf3 );\par
+            \cf5 Console\cf3 .ReadKey(\cf4 true\cf3 );\par
+        \}\par
+    \}\par
+\par
+    \cf4 public\cf3  \cf4 static\cf3  \cf4 class\cf3  \cf5 ApplicationExtensions\cf3\par
+    \{\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf5 Type\cf3 &gt; ToType&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m.GetType());\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 string\cf3 &gt; ToReversedString&lt;T&gt;(\cf4 this\cf3  \cf5 Monad\cf3 &lt;T&gt; monad)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; \cf4 new\cf3  \cf4 string\cf3 (m.ToString().Reverse().ToArray()));\par
+        \}\par
+\par
+        \cf4 public\cf3  \cf4 static\cf3  \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt; DivideBy(\cf4 this\cf3  \cf5 Monad\cf3 &lt;\cf4 int\cf3 &gt; monad, \cf4 int\cf3  divisor)\par
+        \{\par
+            \cf4 return\cf3  monad.Bind(m =&gt; m / divisor);\par
+        \}\par
+    \}\par
+\pard\}\cf0\highlight0\f1\fs24\par
+}
+</FinishedCode>
+    <Notes>{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs24 I wonder what would happen if we changed the divisor...\par
+\par
+(execute)\par
+\par
+Crap.\par
+}
+</Notes>
+  </Step>
+</Demo>

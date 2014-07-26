@@ -1,0 +1,540 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
+using System.Xml.Serialization;
+
+namespace GhostWriter
+{
+    public partial class MainForm : Form
+    {
+        private string _currentDemoFileName;
+        private Demo _demo;
+        private int _currentIndex;
+        private IntPtr _targetApplication;
+
+        public MainForm()
+        {
+            InitializeComponent();
+
+            foreach (var command in GhostKeyboard.Commands)
+            {
+                commandContextMenuStrip.Items.Add(command).Click += CommandMenuItemOnClick;
+            }
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            CreateNew();
+        }
+
+        private void NewToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            CreateNew();
+        }
+
+        private void CreateNew()
+        {
+            _currentDemoFileName = null;
+            reloadDemoToolStripMenuItem.Visible = false;
+
+            _demo = new Demo
+            {
+                Steps = new List<Step>
+                {
+                    new Step { Number = 1 }
+                }
+            };
+
+            _currentIndex = 0;
+
+            btnExecute.Enabled = btnFirst.Enabled = btnPrevious.Enabled = btnNext.Enabled = btnLast.Enabled = false;
+
+            LoadCurrentStep();
+        }
+
+        private void OpenDemoToolStripMenuItemOnClick(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                AddExtension = true,
+                CheckFileExists = true,
+                DefaultExt = "demo",
+                Filter = "Demo Files (*.demo)|*.demo",
+                Multiselect = false,
+                RestoreDirectory = true,
+                SupportMultiDottedExtensions = true,
+                Title = "Open Demo",
+            };
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                _currentDemoFileName = dialog.FileName;
+                reloadDemoToolStripMenuItem.Visible = true;
+
+                LoadDemo(true);
+                
+                _currentIndex = 0;
+                LoadCurrentStep();
+
+                if (setInitialCodeOnLoadToolStripMenuItem.Checked)
+                {
+                    if (!string.IsNullOrWhiteSpace(_demo.InitialCode))
+                    {
+                        SetForegroundWindow(_targetApplication);
+                        GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode));
+                        SetForegroundWindow(Handle);
+                    }
+                }
+            }
+        }
+
+        private void SaveDemoToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            if (_currentDemoFileName == null)
+            {
+                SaveAs();
+            }
+            else
+            {
+                Save(_currentDemoFileName);
+            }
+        }
+
+        private void SaveAsToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            SaveAs();
+        }
+
+        private void SaveAs()
+        {
+            var dialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                DefaultExt = "demo",
+                Filter = "Demo Files (*.demo)|*.demo",
+                OverwritePrompt = true,
+                RestoreDirectory = true,
+                SupportMultiDottedExtensions = true,
+                Title = "Save Demo",
+            };
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                Save(dialog.FileName);
+            }
+        }
+
+        private void Save(string fileName)
+        {
+            var serializer = new XmlSerializer(typeof(Demo));
+            using (var writer = new StreamWriter(fileName))
+            {
+                serializer.Serialize(writer, _demo);
+            }
+        }
+
+        private void BeforeCurrentToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            if (_demo.Steps.Count > 0)
+            {
+                _demo.Steps.Insert(_currentIndex, new Step());
+            }
+            else
+            {
+                _demo.Steps.Add(new Step());
+                _currentIndex = 0;
+            }
+
+            RenumberSteps();
+            LoadCurrentStep();
+        }
+
+        private void AfterCurrentToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            _demo.Steps.Add(new Step());
+            _currentIndex++;
+
+            RenumberSteps();
+            LoadCurrentStep();
+        }
+
+        private void RemoveStepToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            _demo.Steps.RemoveAt(_currentIndex);
+            
+            if (_currentIndex >= _demo.Steps.Count)
+            {
+                _currentIndex--;
+
+                if (_demo.Steps.Count == 0)
+                {
+                    txtFinishedCode.Clear();
+                    txtNotes.Clear();
+                    txtGhostKeyboardData.Clear();
+                }
+                else
+                {
+                    RenumberSteps();
+                    LoadCurrentStep();
+                }
+            }
+            else
+            {
+                RenumberSteps();
+                LoadCurrentStep();
+            }
+        }
+
+        private void SetTargetApplicationToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            var dialog = new SetTargetApplicationTitleDialog(_demo.TargetApplicationTitle);
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                _demo.TargetApplicationTitle = dialog.TargetApplicationTitle;
+                SetTargetApplication();
+            }
+        }
+
+        private void SetTargetApplication()
+        {
+            var windows = GetTargetWindows();
+
+            if (!windows.Any())
+            {
+                MessageBox.Show("No matching windows found.");
+            }
+            else if (windows.Count == 1)
+            {
+                _targetApplication = windows[0];
+            }
+            else
+            {
+                _targetApplication = IntPtr.Zero;
+
+                MessageBox.Show(
+                    "More than one window matches. Each one will be focused, then you will be asked if it is the desired window.");
+
+                foreach (var window in windows)
+                {
+                    var sb = new StringBuilder();
+                    var placement = new WindowPlacement();
+                    GetWindowText(window, sb, sb.Capacity);
+                    GetWindowPlacement(window, ref placement);
+                    var state = placement.showCmd;
+                    
+                    if (state == ShowWindowCommands.ShowMinimized)
+                    {
+                        ShowWindow(window, ShowWindowCommands.ShowMaximized);
+                    }
+
+                    SetForegroundWindow(window);
+                    if (MessageBox.Show("Is this the correct window?", "Select Target Application", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        _targetApplication = window;
+                        break;
+                    }
+
+                    if (state == ShowWindowCommands.ShowMinimized)
+                    {
+                        ShowWindow(window, ShowWindowCommands.ShowMinimized);
+                    }
+                }
+
+                if (_targetApplication == IntPtr.Zero)
+                {
+                    MessageBox.Show("No window was selected.");
+                }
+            }
+        }
+
+        private void RenumberSteps()
+        {
+            for (int i = 0; i < _demo.Steps.Count; i++)
+            {
+                _demo.Steps[i].Number = i + 1;
+            }
+        }
+
+        private void TxtNotesTextChanged(object sender, EventArgs e)
+        {
+            _demo.Steps[_currentIndex].Notes = txtNotes.Rtf;
+        }
+
+        private void TxtFinishedCodeTextChanged(object sender, EventArgs e)
+        {
+            _demo.Steps[_currentIndex].FinishedCode = txtFinishedCode.Rtf;
+        }
+
+        private void TxtGhostKeyboardDataTextChanged(object sender, EventArgs e)
+        {
+            _demo.Steps[_currentIndex].GhostKeyboardData = txtGhostKeyboardData.Text;
+        }
+
+        private void TxtInitialCodeTextChanged(object sender, EventArgs e)
+        {
+            _demo.InitialCode = txtNotes.Text;
+        }
+
+        private void LoadDemo(bool setTargetApplication)
+        {
+            try
+            {
+                var serializer = new XmlSerializer(typeof(Demo));
+                using (var reader = new StreamReader(_currentDemoFileName))
+                {
+                    _demo = (Demo) serializer.Deserialize(reader);
+                }
+
+                if (setTargetApplication)
+                {
+                    SetTargetApplication();
+                }
+
+                _demo.InitialCode = System.Text.RegularExpressions.Regex.Replace(_demo.InitialCode, "(?!<\r)\n", "\r\n");
+
+                btnExecute.Enabled = _demo.Steps.Count > 0 && _targetApplication != IntPtr.Zero;
+                btnNext.Enabled = btnLast.Enabled = _demo.Steps.Count > 1;
+
+                txtInitialCode.TextChanged -= TxtInitialCodeTextChanged;
+                txtInitialCode.Text = _demo.InitialCode;
+                txtInitialCode.TextChanged += TxtInitialCodeTextChanged;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to open demo: " + ex.Message);
+            }
+        }
+
+        private void ReloadDemoToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            LoadDemo(false);
+            LoadCurrentStep();
+        }
+
+        private void BtnExecuteClick(object sender, EventArgs e)
+        {
+            SetForegroundWindow(_targetApplication);
+            GhostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData);
+        }
+
+        private void BtnNextClick(object sender, EventArgs e)
+        {
+            _currentIndex++;
+            LoadCurrentStep();
+        }
+
+        private void BtnPreviousClick(object sender, EventArgs e)
+        {
+            _currentIndex--;
+            LoadCurrentStep();
+        }
+
+        private void BtnFirstClick(object sender, EventArgs e)
+        {
+            _currentIndex = 0;
+            LoadCurrentStep();
+        }
+
+        private void BtnLastClick(object sender, EventArgs e)
+        {
+            _currentIndex = _demo.Steps.Count - 1;
+            LoadCurrentStep();
+        }
+
+        private void NoSoundToolStripMenuItemCheckedChanged(object sender, EventArgs e)
+        {
+            Sound.Enabled = !noSoundToolStripMenuItem.Checked;
+        }
+
+        private void NormalToolStripMenuItemCheckedChanged(object sender, EventArgs e)
+        {
+            if (normalToolStripMenuItem.Checked)
+            {
+                fastToolStripMenuItem.Checked = false;
+                uncheckedToolStripMenuItem.Checked = false;
+
+                GhostKeyboard.DelayStrategy = DelayStrategy.Normal;
+            }
+        }
+
+        private void FastToolStripMenuItemCheckedChanged(object sender, EventArgs e)
+        {
+            if (fastToolStripMenuItem.Checked)
+            {
+                normalToolStripMenuItem.Checked = false;
+                uncheckedToolStripMenuItem.Checked = false;
+
+                GhostKeyboard.DelayStrategy = DelayStrategy.Fast;
+            }
+        }
+
+        private void UncheckedToolStripMenuItemCheckedChanged(object sender, EventArgs e)
+        {
+            if (uncheckedToolStripMenuItem.Checked)
+            {
+                normalToolStripMenuItem.Checked = false;
+                fastToolStripMenuItem.Checked = false;
+
+                GhostKeyboard.DelayStrategy = DelayStrategy.Unchecked;
+            }
+        }
+
+        private void HighlightToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            var owner = highlightToolStripMenuItem.Owner as ContextMenuStrip;
+            var textBox = owner.SourceControl as RichTextBox;
+            textBox.SelectionBackColor = Color.Yellow;
+        }
+
+        private void OnTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            var textBox = (RichTextBox)sender;
+
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.H)
+            {
+                textBox.SelectionBackColor = Color.Yellow;
+            }
+        }
+
+        private void RemoveHighlightsToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            var owner = highlightToolStripMenuItem.Owner as ContextMenuStrip;
+            var textBox = owner.SourceControl as RichTextBox;
+            textBox.SelectionBackColor = textBox.BackColor;
+
+            if (ReferenceEquals(textBox, txtFinishedCode))
+            {
+                _demo.Steps[_currentIndex].FinishedCode = textBox.Rtf;
+            }
+            else if (ReferenceEquals(textBox, txtNotes))
+            {
+                _demo.Steps[_currentIndex].Notes = textBox.Rtf;
+            }
+        }
+
+        private void CommandMenuItemOnClick(object sender, EventArgs eventArgs)
+        {
+            var command = ((ToolStripItem)sender).Text;
+
+            var previous = Clipboard.GetText();
+            Clipboard.SetText(command);
+            SendKeys.SendWait("^(v)");
+            Clipboard.SetDataObject(previous);
+        }
+
+        private void LoadCurrentStep()
+        {
+            txtFinishedCode.TextChanged -= TxtFinishedCodeTextChanged;
+            txtGhostKeyboardData.TextChanged -= TxtGhostKeyboardDataTextChanged;
+            txtNotes.TextChanged -= TxtNotesTextChanged;
+
+            btnNext.Enabled = btnLast.Enabled = _currentIndex < _demo.Steps.Count - 1;
+            btnPrevious.Enabled = btnFirst.Enabled = _currentIndex > 0;
+            txtFinishedCode.Rtf = _demo.Steps[_currentIndex].FinishedCode;
+            txtNotes.Rtf = _demo.Steps[_currentIndex].Notes;
+            txtGhostKeyboardData.Text = _demo.Steps[_currentIndex].GhostKeyboardData;
+            lblStepNumberA.Text = "Step " + _demo.Steps[_currentIndex].Number;
+            lblStepNumberB.Text = "Step " + _demo.Steps[_currentIndex].Number;
+
+            txtFinishedCode.TextChanged += TxtFinishedCodeTextChanged;
+            txtGhostKeyboardData.TextChanged += TxtGhostKeyboardDataTextChanged;
+            txtNotes.TextChanged += TxtNotesTextChanged;
+        }
+
+        private IList<IntPtr> GetTargetWindows()
+        {
+            var windows = new List<IntPtr>();
+
+            if (_demo.TargetApplicationTitle == null)
+            {
+                return windows;
+            }
+
+            var nChildHandle = GetWindow(GetDesktopWindow(), GwChild);
+
+            while (nChildHandle != IntPtr.Zero)
+            {
+                // don't get this application...
+                if (nChildHandle == Handle)
+                {
+                    nChildHandle = GetWindow(nChildHandle, GwHwndnext);
+                }
+
+                if (IsWindowVisible(nChildHandle))
+                {
+                    var sbTitle = new StringBuilder(1024);
+                    GetWindowText(nChildHandle, sbTitle, sbTitle.Capacity);
+                    String sWinTitle = sbTitle.ToString();
+                    {
+                        if (sWinTitle.ToLower().Contains(_demo.TargetApplicationTitle.ToLower()))
+                        {
+                            windows.Add(nChildHandle);
+                        }
+                    }
+                }
+
+                nChildHandle = GetWindow(nChildHandle, GwHwndnext);
+            }
+
+            return windows;
+        }
+
+        [DllImport("user32.dll", SetLastError = false)]
+        static extern IntPtr GetDesktopWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr GetWindow(IntPtr hWnd, int uCmd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowPlacement(IntPtr hWnd, ref WindowPlacement lpwndpl);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
+
+        // ReSharper disable UnusedMember.Local
+        // ReSharper disable UnassignedField.Local
+        private struct WindowPlacement
+        {
+            public int length;
+            public int flags;
+            public ShowWindowCommands showCmd;
+            public Point ptMinPosition;
+            public Point ptMaxPosition;
+            public Rectangle rcNormalPosition;
+        }
+        // ReSharper restore UnassignedField.Local
+        // ReSharper restore UnusedMember.Local
+
+        /// <summary>Enumeration of the different ways of showing a window using 
+        /// ShowWindow</summary>
+        private enum ShowWindowCommands : uint
+        {
+            ShowMinimized = 2,
+            ShowMaximized = 3,
+        }
+
+        private const int GwHwndnext = 2;
+        private const int GwChild = 5;
+    }
+}
