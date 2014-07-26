@@ -48,7 +48,6 @@
   <ItemGroup>
     <Compile Include="DelayStrategy.cs" />
     <Compile Include="Demo.cs" />
-    <Compile Include="Foo.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
