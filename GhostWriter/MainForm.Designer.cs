@@ -456,7 +456,7 @@
             // 
             // btnPushToApplication
             // 
-            this.btnPushToApplication.Location = new System.Drawing.Point(262, 3);
+            this.btnPushToApplication.Location = new System.Drawing.Point(262, 0);
             this.btnPushToApplication.Name = "btnPushToApplication";
             this.btnPushToApplication.Size = new System.Drawing.Size(106, 23);
             this.btnPushToApplication.TabIndex = 8;
@@ -467,7 +467,7 @@
             // rbFinishedCode
             // 
             this.rbFinishedCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rbFinishedCode.Location = new System.Drawing.Point(135, 3);
+            this.rbFinishedCode.Location = new System.Drawing.Point(135, 0);
             this.rbFinishedCode.Name = "rbFinishedCode";
             this.rbFinishedCode.Size = new System.Drawing.Size(121, 23);
             this.rbFinishedCode.TabIndex = 2;
@@ -478,7 +478,7 @@
             // 
             this.rbStartingCode.Checked = true;
             this.rbStartingCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rbStartingCode.Location = new System.Drawing.Point(13, 3);
+            this.rbStartingCode.Location = new System.Drawing.Point(13, 0);
             this.rbStartingCode.Name = "rbStartingCode";
             this.rbStartingCode.Size = new System.Drawing.Size(116, 23);
             this.rbStartingCode.TabIndex = 1;

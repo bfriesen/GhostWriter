@@ -119,11 +119,10 @@ namespace GhostWriter
 
             if (setInitialCodeOnLoadToolStripMenuItem.Checked)
             {
-                if (!string.IsNullOrWhiteSpace(_demo.InitialCode)
-                    && _targetApplication != IntPtr.Zero)
+                if (_targetApplication != IntPtr.Zero)
                 {
                     SetForegroundWindow(_targetApplication);
-                    GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode));
+                    GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode ?? ""));
                     SetForegroundWindow(Handle);
                 }
             }
