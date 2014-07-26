@@ -76,6 +76,7 @@
             this.commandContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.lblStepNumberB = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.openRecentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             openDemoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -110,6 +111,7 @@
             fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             openDemoToolStripMenuItem,
+            this.openRecentToolStripMenuItem,
             this.reloadDemoToolStripMenuItem,
             this.saveDemoToolStripMenuItem,
             this.saveAsToolStripMenuItem});
@@ -120,7 +122,7 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.NewToolStripMenuItemClick);
             // 
@@ -129,14 +131,14 @@
             openDemoToolStripMenuItem.Name = "openDemoToolStripMenuItem";
             openDemoToolStripMenuItem.ShortcutKeyDisplayString = "";
             openDemoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            openDemoToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            openDemoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             openDemoToolStripMenuItem.Text = "Open";
             openDemoToolStripMenuItem.Click += new System.EventHandler(this.OpenDemoToolStripMenuItemOnClick);
             // 
             // reloadDemoToolStripMenuItem
             // 
             this.reloadDemoToolStripMenuItem.Name = "reloadDemoToolStripMenuItem";
-            this.reloadDemoToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.reloadDemoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.reloadDemoToolStripMenuItem.Text = "Reload";
             this.reloadDemoToolStripMenuItem.Click += new System.EventHandler(this.ReloadDemoToolStripMenuItemClick);
             // 
@@ -144,14 +146,14 @@
             // 
             this.saveDemoToolStripMenuItem.Name = "saveDemoToolStripMenuItem";
             this.saveDemoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveDemoToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.saveDemoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveDemoToolStripMenuItem.Text = "Save";
             this.saveDemoToolStripMenuItem.Click += new System.EventHandler(this.SaveDemoToolStripMenuItemClick);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsToolStripMenuItemClick);
             // 
@@ -264,7 +266,6 @@
             this.setInitialCodeOnLoadToolStripMenuItem.Name = "setInitialCodeOnLoadToolStripMenuItem";
             this.setInitialCodeOnLoadToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.setInitialCodeOnLoadToolStripMenuItem.Text = "Set initial code on Load";
-            this.setInitialCodeOnLoadToolStripMenuItem.Click += new System.EventHandler(this.setInitialCodeOnLoadToolStripMenuItem_Click);
             // 
             // btnExecute
             // 
@@ -587,6 +588,12 @@
             this.lblStepNumberB.Size = new System.Drawing.Size(886, 20);
             this.lblStepNumberB.TabIndex = 2;
             // 
+            // openRecentToolStripMenuItem
+            // 
+            this.openRecentToolStripMenuItem.Name = "openRecentToolStripMenuItem";
+            this.openRecentToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openRecentToolStripMenuItem.Text = "Open Recent";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -667,6 +674,7 @@
         private System.Windows.Forms.RichTextBox txtNotes2;
         private System.Windows.Forms.Label lblKeyboardData;
         private System.Windows.Forms.Button btnPushToApplication;
+        private System.Windows.Forms.ToolStripMenuItem openRecentToolStripMenuItem;
 
     }
 }

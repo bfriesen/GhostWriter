@@ -23,7 +23,6 @@ namespace GhostWriter
         private Demo _demo;
         private int _currentIndex;
         private IntPtr _targetApplication;
-        private AppData _appData;
 
         public MainForm()
         {
@@ -65,7 +64,8 @@ namespace GhostWriter
                 Steps = new List<Step>
                 {
                     new Step { Number = 1 }
-                }
+                },
+                InitialCode = ""
             };
 
             _currentIndex = 0;
@@ -92,23 +92,39 @@ namespace GhostWriter
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
                 _currentDemoFileName = dialog.FileName;
-                Text = Path.GetFileNameWithoutExtension(_currentDemoFileName) + " - Ghost Writer";
-                reloadDemoToolStripMenuItem.Visible = true;
+                InitializeDemo();
 
-                LoadDemo(true);
-                
-                _currentIndex = 0;
-                LoadCurrentStep();
-
-                if (setInitialCodeOnLoadToolStripMenuItem.Checked)
+                if (!openRecentToolStripMenuItem.DropDownItems.Cast<ToolStripItem>()
+                    .Any(x => x.Text == _currentDemoFileName))
                 {
-                    if (!string.IsNullOrWhiteSpace(_demo.InitialCode)
-                        && _targetApplication != IntPtr.Zero)
-                    {
-                        SetForegroundWindow(_targetApplication);
-                        GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode));
-                        SetForegroundWindow(Handle);
-                    }
+                    var recentFileToolStripMenuItem = new ToolStripMenuItem(_currentDemoFileName);
+                    recentFileToolStripMenuItem.Click += recentFileToolStripMenuItem_Click;
+                    openRecentToolStripMenuItem.DropDownItems.Insert(0, recentFileToolStripMenuItem);
+                    openRecentToolStripMenuItem.Visible = true;
+
+                    SaveAppData();
+                }
+            }
+        }
+
+        private void InitializeDemo()
+        {
+            Text = Path.GetFileNameWithoutExtension(_currentDemoFileName) + " - Ghost Writer";
+            reloadDemoToolStripMenuItem.Visible = true;
+
+            LoadDemo(true);
+
+            _currentIndex = 0;
+            LoadCurrentStep();
+
+            if (setInitialCodeOnLoadToolStripMenuItem.Checked)
+            {
+                if (!string.IsNullOrWhiteSpace(_demo.InitialCode)
+                    && _targetApplication != IntPtr.Zero)
+                {
+                    SetForegroundWindow(_targetApplication);
+                    GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode));
+                    SetForegroundWindow(Handle);
                 }
             }
         }
@@ -145,7 +161,9 @@ namespace GhostWriter
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
-                Save(dialog.FileName);
+                _currentDemoFileName = dialog.FileName;
+
+                Save(_currentDemoFileName);
             }
         }
 
@@ -156,6 +174,8 @@ namespace GhostWriter
             {
                 serializer.Serialize(writer, _demo);
             }
+
+            Text = Path.GetFileNameWithoutExtension(_currentDemoFileName) + " - Ghost Writer";
         }
 
         private void BeforeCurrentToolStripMenuItemClick(object sender, EventArgs e)
@@ -624,24 +644,41 @@ namespace GhostWriter
         public class AppData
         {
             public bool SetInitialCodeOnLoad { get; set; }
+            [XmlElement("RecentFile")]
+            public List<string> RecentFiles { get; set; }
         }
 
         private void SaveAppData()
         {
+            var appData = new AppData
+            {
+                RecentFiles = new List<string>()
+            };
+            
+            appData.SetInitialCodeOnLoad = setInitialCodeOnLoadToolStripMenuItem.Checked;
+            
+            foreach (ToolStripItem item in openRecentToolStripMenuItem.DropDownItems)
+            {
+                appData.RecentFiles.Add(item.Text);
+            }
+
             using (var writer = new StreamWriter(_appDataPath))
             {
                 var serializer = new XmlSerializer(typeof(AppData));
-                serializer.Serialize(writer, _appData);
+                serializer.Serialize(writer, appData);
             }
         }
 
         private void LoadAppData()
         {
+            AppData appData;
+
             if (!File.Exists(_appDataPath))
             {
-                _appData = new AppData
+                appData = new AppData
                 {
-                    SetInitialCodeOnLoad = true
+                    SetInitialCodeOnLoad = true,
+                    RecentFiles = new List<string>()
                 };
 
                 SaveAppData();
@@ -651,17 +688,40 @@ namespace GhostWriter
                 using (var reader = new StreamReader(_appDataPath))
                 {
                     var serializer = new XmlSerializer(typeof(AppData));
-                    _appData = (AppData)serializer.Deserialize(reader);
+                    appData = (AppData)serializer.Deserialize(reader);
                 }
             }
 
-            setInitialCodeOnLoadToolStripMenuItem.Checked = _appData.SetInitialCodeOnLoad;
+            setInitialCodeOnLoadToolStripMenuItem.Checked = appData.SetInitialCodeOnLoad;
+
+            if (appData.RecentFiles.Count > 0)
+            {
+                foreach (ToolStripMenuItem recentFileToolStripMenuItem in openRecentToolStripMenuItem.DropDownItems)
+                {
+                    recentFileToolStripMenuItem.Click -= recentFileToolStripMenuItem_Click;
+                }
+
+                openRecentToolStripMenuItem.DropDownItems.Clear();
+
+                foreach (var recentFile in appData.RecentFiles)
+                {
+                    var recentFileToolStripMenuItem = new ToolStripMenuItem(recentFile);
+                    recentFileToolStripMenuItem.Click += recentFileToolStripMenuItem_Click;
+                    openRecentToolStripMenuItem.DropDownItems.Add(recentFileToolStripMenuItem);
+                }
+
+                openRecentToolStripMenuItem.Visible = true;
+            }
+            else
+            {
+                openRecentToolStripMenuItem.Visible = false;
+            }
         }
 
-        private void setInitialCodeOnLoadToolStripMenuItem_Click(object sender, EventArgs e)
+        private void recentFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _appData.SetInitialCodeOnLoad = setInitialCodeOnLoadToolStripMenuItem.Checked;
-            SaveAppData();
+            _currentDemoFileName = ((ToolStripMenuItem)sender).Text;
+            InitializeDemo();
         }
     }
 }
