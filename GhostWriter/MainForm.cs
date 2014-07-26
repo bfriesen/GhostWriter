@@ -646,6 +646,7 @@ namespace GhostWriter
             public bool SetInitialCodeOnLoad { get; set; }
             [XmlElement("RecentFile")]
             public List<string> RecentFiles { get; set; }
+            public bool PresentationMode { get; set; }
         }
 
         private void SaveAppData()
@@ -656,6 +657,7 @@ namespace GhostWriter
             };
             
             appData.SetInitialCodeOnLoad = setInitialCodeOnLoadToolStripMenuItem.Checked;
+            appData.PresentationMode = presentationModeToolStripMenuItem.Checked;
             
             foreach (ToolStripItem item in openRecentToolStripMenuItem.DropDownItems)
             {
@@ -678,7 +680,8 @@ namespace GhostWriter
                 appData = new AppData
                 {
                     SetInitialCodeOnLoad = true,
-                    RecentFiles = new List<string>()
+                    RecentFiles = new List<string>(),
+                    PresentationMode = false
                 };
 
                 SaveAppData();
@@ -693,6 +696,7 @@ namespace GhostWriter
             }
 
             setInitialCodeOnLoadToolStripMenuItem.Checked = appData.SetInitialCodeOnLoad;
+            presentationModeToolStripMenuItem.Checked = appData.PresentationMode;
 
             if (appData.RecentFiles.Count > 0)
             {
@@ -722,6 +726,42 @@ namespace GhostWriter
         {
             _currentDemoFileName = ((ToolStripMenuItem)sender).Text;
             InitializeDemo();
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (presentationModeToolStripMenuItem.Checked)
+            {
+                switch (e.KeyData)
+                {
+                    case Keys.Next:
+                        if (btnNext.Enabled)
+                        {
+                            BtnNextClick(null, null);
+                        }
+                        break;
+                    case Keys.PageUp:
+                        if (btnPrevious.Enabled)
+                        {
+                            BtnPreviousClick(null, null);
+                        }
+                        break;
+                    case Keys.F5:
+                    case Keys.Escape:
+                        if (btnExecute.Enabled)
+                        {
+                            BtnExecuteClick(null, null);
+                        }
+                        break;
+                    //case Keys.OemPeriod:
+                    //    break;
+                }
+            }
+        }
+
+        private void OptionToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveAppData();
         }
     }
 }
