@@ -63,6 +63,7 @@
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.lblNotes = new System.Windows.Forms.Label();
             this.txtNotes = new System.Windows.Forms.RichTextBox();
+            this.btnPushToApplication = new System.Windows.Forms.Button();
             this.rbFinishedCode = new System.Windows.Forms.RadioButton();
             this.rbStartingCode = new System.Windows.Forms.RadioButton();
             this.txtExpectedCode = new System.Windows.Forms.RichTextBox();
@@ -75,7 +76,6 @@
             this.commandContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.lblStepNumberB = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btnPushToApplication = new System.Windows.Forms.Button();
             menuStrip = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             openDemoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -264,6 +264,7 @@
             this.setInitialCodeOnLoadToolStripMenuItem.Name = "setInitialCodeOnLoadToolStripMenuItem";
             this.setInitialCodeOnLoadToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.setInitialCodeOnLoadToolStripMenuItem.Text = "Set initial code on Load";
+            this.setInitialCodeOnLoadToolStripMenuItem.Click += new System.EventHandler(this.setInitialCodeOnLoadToolStripMenuItem_Click);
             // 
             // btnExecute
             // 
@@ -435,6 +436,17 @@
             this.txtNotes.TextChanged += new System.EventHandler(this.TxtNotesTextChanged);
             this.txtNotes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxKeyDown);
             // 
+            // btnPushToApplication
+            // 
+            this.btnPushToApplication.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btnPushToApplication.Location = new System.Drawing.Point(262, 3);
+            this.btnPushToApplication.Name = "btnPushToApplication";
+            this.btnPushToApplication.Size = new System.Drawing.Size(106, 23);
+            this.btnPushToApplication.TabIndex = 8;
+            this.btnPushToApplication.Text = "Push to Application";
+            this.btnPushToApplication.UseVisualStyleBackColor = true;
+            this.btnPushToApplication.Click += new System.EventHandler(this.BtnPushToApplication_Click);
+            // 
             // rbFinishedCode
             // 
             this.rbFinishedCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -574,17 +586,6 @@
             this.lblStepNumberB.Name = "lblStepNumberB";
             this.lblStepNumberB.Size = new System.Drawing.Size(886, 20);
             this.lblStepNumberB.TabIndex = 2;
-            // 
-            // btnPushToApplication
-            // 
-            this.btnPushToApplication.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnPushToApplication.Location = new System.Drawing.Point(262, 3);
-            this.btnPushToApplication.Name = "btnPushToApplication";
-            this.btnPushToApplication.Size = new System.Drawing.Size(106, 23);
-            this.btnPushToApplication.TabIndex = 8;
-            this.btnPushToApplication.Text = "Push to Application";
-            this.btnPushToApplication.UseVisualStyleBackColor = true;
-            this.btnPushToApplication.Click += new System.EventHandler(this.BtnPushToApplication_Click);
             // 
             // MainForm
             // 

@@ -12,10 +12,18 @@ namespace GhostWriter
 {
     public partial class MainForm : Form
     {
+        private static readonly string _appDataPath =
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "RandomSkunk",
+                "GhostWriter",
+                "appData.xml");
+
         private string _currentDemoFileName;
         private Demo _demo;
         private int _currentIndex;
         private IntPtr _targetApplication;
+        private AppData _appData;
 
         public MainForm()
         {
@@ -25,11 +33,18 @@ namespace GhostWriter
             {
                 commandContextMenuStrip.Items.Add(command).Click += CommandMenuItemOnClick;
             }
+
+            if (!Directory.Exists(Path.GetDirectoryName(_appDataPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_appDataPath));
+            }
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            LoadAppData();
 
             CreateNew();
         }
@@ -604,6 +619,49 @@ namespace GhostWriter
                 GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(txtExpectedCode.Text));
                 SetForegroundWindow(Handle);
             }
+        }
+
+        public class AppData
+        {
+            public bool SetInitialCodeOnLoad { get; set; }
+        }
+
+        private void SaveAppData()
+        {
+            using (var writer = new StreamWriter(_appDataPath))
+            {
+                var serializer = new XmlSerializer(typeof(AppData));
+                serializer.Serialize(writer, _appData);
+            }
+        }
+
+        private void LoadAppData()
+        {
+            if (!File.Exists(_appDataPath))
+            {
+                _appData = new AppData
+                {
+                    SetInitialCodeOnLoad = true
+                };
+
+                SaveAppData();
+            }
+            else
+            {
+                using (var reader = new StreamReader(_appDataPath))
+                {
+                    var serializer = new XmlSerializer(typeof(AppData));
+                    _appData = (AppData)serializer.Deserialize(reader);
+                }
+            }
+
+            setInitialCodeOnLoadToolStripMenuItem.Checked = _appData.SetInitialCodeOnLoad;
+        }
+
+        private void setInitialCodeOnLoadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _appData.SetInitialCodeOnLoad = setInitialCodeOnLoadToolStripMenuItem.Checked;
+            SaveAppData();
         }
     }
 }
