@@ -97,7 +97,7 @@ namespace GhostWriter
 
                 if (key == "~")
                 {
-                    Sound.PlayKeystroke();
+                    Sound.PlayCarriageReturn();
 
                     if (DelayStrategy == DelayStrategy.Normal)
                     {

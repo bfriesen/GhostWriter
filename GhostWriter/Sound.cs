@@ -46,10 +46,11 @@ namespace GhostWriter
 
         public static void PlayCarriageReturn()
         {
-            if (Enabled)
-            {
-                mciSendString("play " + (carriageReturns[_carriageReturnIndex++ % carriageReturns.Length]), new StringBuilder(), 65534, IntPtr.Zero);
-            }
+            PlaySpace();
+            //if (Enabled)
+            //{
+            //    mciSendString("play " + (carriageReturns[_carriageReturnIndex++ % carriageReturns.Length]), new StringBuilder(), 65534, IntPtr.Zero);
+            //}
         }
 
         public static void PlaySpace()
