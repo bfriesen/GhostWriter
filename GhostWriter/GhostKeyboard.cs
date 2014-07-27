@@ -10,7 +10,7 @@ namespace GhostWriter
 {
     public static class GhostKeyboard
     {
-        private static readonly Regex escapeRegex = new Regex(@"[+\^%~(){}[\]]");
+        private static readonly Regex escapeRegex = new Regex(@"[+\^%~(){}]|\[(?!`)|(?<!`)\]");
         private static readonly Regex pauseRegex = new Regex(@"\[(Pause (\d+))\]");
 
         private static readonly Random random = new Random();
@@ -54,7 +54,7 @@ namespace GhostWriter
 
         public static void Type(string rawInput)
         {
-            var escapedInput = EscapeInput(rawInput);
+            var escapedInput = EscapeInput(rawInput ?? "");
 
             var sb = new StringBuilder();
             for (int i = 0; i < escapedInput.Length; i++)
@@ -75,6 +75,13 @@ namespace GhostWriter
                     {
                         // A command wrapped in [] does not have a delay...
                         AddAndExecuteFastCommand(escapedInput, sb, ref i);
+                        continue;
+                    }
+
+                    if (escapedInput[i + 1] == '`')
+                    {
+                        // When wrapped in [`text to paste`] indicates a paste command
+                        ExecutePasteCommand(escapedInput, ref i);
                         continue;
                     }
 
@@ -223,6 +230,27 @@ namespace GhostWriter
             var command = sb.ToString();
             SendKeys.SendWait(command);
             sb.Clear();
+        }
+
+        private static void ExecutePasteCommand(string escapedInput, ref int i)
+        {
+            var pasteContents = new StringBuilder();
+
+            char c;
+            i += 2;
+
+            do
+            {
+                c = escapedInput[i];
+                pasteContents.Append(c);
+                i++;
+            } while (c != '`' && escapedInput[i + 1] != ']');
+
+            i += 1;
+
+            Clipboard.SetText(pasteContents.ToString());
+            Thread.Sleep(500);
+            SendKeys.SendWait("^(v)");
         }
 
         private static string GotoLine(Match match)
