@@ -33,6 +33,7 @@ namespace GhostWriter
             { @"Delete (\d+)", Delete },
             { @"SelectTextFromHere (\d+),(\d+)", SelectTextFromHere },
             { @"DeleteLine", DeleteLine },
+            { @"DeleteAll", DeleteAll },
             { @"Fast", Fast },
             { @"/Fast", Fast },
             { @"CommentLines", CommentLines },
@@ -354,6 +355,11 @@ namespace GhostWriter
         private static string DeleteLine(Match match)
         {
             return "[]^+(l)[]";
+        }
+
+        private static string DeleteAll(Match match)
+        {
+            return "[]^(a){DEL}[]";
         }
 
         private static string Fast(Match match)
