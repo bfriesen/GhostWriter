@@ -32,9 +32,9 @@ namespace GhostWriter
             { @"Down (\d+)", DownMultiple },
             { @"Left (\d+)", LeftMultiple },
             { @"Right (\d+)", RightMultiple },
-            { @"SelectText (\d+),(\d+) (\d+),(\d+)", SelectText },
+            { @"SelectText (\d+),(\d+) (-?\d+),(-?\d+)", SelectText },
             { @"Delete (\d+)", Delete },
-            { @"SelectTextFromHere (\d+),(\d+)", SelectTextFromHere },
+            { @"SelectTextFromHere (-?\d+),(-?\d+)", SelectTextFromHere },
             { @"DeleteLine", DeleteLine },
             { @"DeleteAll", DeleteAll },
             { @"Fast", Fast },
@@ -46,7 +46,7 @@ namespace GhostWriter
 
         public static IEnumerable<string> Commands
         {
-            get { return new[] { "[Pause #]", "[Wait]" }.Concat(commands.Select(kvp => kvp.Key).Select(commandRegex => "[" + commandRegex.Replace("(", "").Replace(")", "").Replace(@"\d+", "#") + "]")); }
+            get { return new[] { "[Pause #]", "[Wait]" }.Concat(commands.Select(kvp => kvp.Key).Select(commandRegex => "[" + commandRegex.Replace("(", "").Replace(")", "").Replace(@"-?\d+", "#").Replace(@"\d+", "#") + "]")); }
         }
 
         public static DelayStrategy DelayStrategy { get; set; }
@@ -368,14 +368,28 @@ namespace GhostWriter
         private static void SelectTextFromHere(StringBuilder sb, int lineCount, int columnCount)
         {
             sb.Append("+(");
-            for (int i = 0; i < lineCount; i++)
+            for (int i = 0; i < Math.Abs(lineCount); i++)
             {
-                sb.Append("{DOWN}");
+                if (lineCount > 0)
+                {
+                    sb.Append("{DOWN}");
+                }
+                else
+                {
+                    sb.Append("{UP}");
+                }
             }
 
-            for (int i = 0; i < columnCount; i++)
+            for (int i = 0; i < Math.Abs(columnCount); i++)
             {
-                sb.Append("{RIGHT}");
+                if (columnCount > 0)
+                {
+                    sb.Append("{RIGHT}");
+                }
+                else
+                {
+                    sb.Append("{LEFT}");
+                }
             }
             sb.Append(")");
         }
