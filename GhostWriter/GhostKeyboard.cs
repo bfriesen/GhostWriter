@@ -111,7 +111,7 @@ namespace GhostWriter
                         var dialog = new WaitDialog();
                         dialog.ShowDialog();
 
-                        i += "[Wait]".Length;
+                        i = i + "Wait".Length + 1;
                         sb.Clear();
 
                         setFocusOnTargetApplication();
