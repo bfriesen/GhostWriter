@@ -18,8 +18,11 @@ namespace GhostWriter
 
         private void WaitDialog_KeyDown(object sender, KeyEventArgs e)
         {
-            DialogResult = DialogResult.OK;
-            Close();
+            if (e.KeyData == Keys.Next)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
     }
 }
