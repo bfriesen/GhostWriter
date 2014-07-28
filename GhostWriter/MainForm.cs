@@ -364,7 +364,7 @@ namespace GhostWriter
         private void BtnExecuteClick(object sender, EventArgs e)
         {
             SetForegroundWindow(_targetApplication);
-            GhostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData);
+            GhostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData, () => SetForegroundWindow(Handle), () => SetForegroundWindow(_targetApplication));
 
             if (presentationModeToolStripMenuItem.Checked)
             {

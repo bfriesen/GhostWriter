@@ -46,7 +46,7 @@ namespace GhostWriter
 
         public static IEnumerable<string> Commands
         {
-            get { return new[] { "[Pause #]" }.Concat(commands.Select(kvp => kvp.Key).Select(commandRegex => "[" + commandRegex.Replace("(", "").Replace(")", "").Replace(@"\d+", "#") + "]")); }
+            get { return new[] { "[Pause #]", "[Wait]" }.Concat(commands.Select(kvp => kvp.Key).Select(commandRegex => "[" + commandRegex.Replace("(", "").Replace(")", "").Replace(@"\d+", "#") + "]")); }
         }
 
         public static DelayStrategy DelayStrategy { get; set; }
@@ -56,7 +56,7 @@ namespace GhostWriter
             SendKeys.SendWait(input);
         }
 
-        public static void Type(string rawInput)
+        public static void Type(string rawInput, Action setFocusOnMainForm, Action setFocusOnTargetApplication)
         {
             var escapedInput = EscapeInput(rawInput ?? "");
 
@@ -101,6 +101,21 @@ namespace GhostWriter
 
                         i = match.Index + match.Length - 1;
                         sb.Clear();
+                        continue;
+                    }
+
+                    if (escapedInput.Substring(i).StartsWith("[Wait]"))
+                    {
+                        setFocusOnMainForm();
+
+                        var dialog = new WaitDialog();
+                        dialog.ShowDialog();
+
+                        i += "[Wait]".Length;
+                        sb.Clear();
+
+                        setFocusOnTargetApplication();
+
                         continue;
                     }
                 }
@@ -165,7 +180,7 @@ namespace GhostWriter
         private static string InsertCommands(string input)
         {
             var output = commands.Aggregate(input, (current, command) => Regex.Replace(current, @"{\[}" + command.Key + @"{\]}", command.Value));
-            return Regex.Replace(output, @"{\[}(Pause (\d+)){\]}", match => "[" + match.Groups[1] + "]");
+            return Regex.Replace(output, @"{\[}(Pause \d+|Wait){\]}", match => "[" + match.Groups[1] + "]");
         }
 
         private static void AddEscapedCharacters(string escapedInput, char c, StringBuilder sb, ref int i)
