@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
@@ -640,7 +641,10 @@ namespace GhostWriter
             if (_targetApplication != IntPtr.Zero)
             {
                 SetForegroundWindow(_targetApplication);
-                GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(txtExpectedCode.Text));
+                Clipboard.SetText(txtExpectedCode.Text);
+                GhostKeyboard.TypeRaw("^(a){DEL}");
+                Thread.Sleep(1000);
+                GhostKeyboard.TypeRaw("^(v)");
                 SetForegroundWindow(Handle);
             }
         }
