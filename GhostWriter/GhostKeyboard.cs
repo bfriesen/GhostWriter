@@ -41,6 +41,7 @@ namespace GhostWriter
             { @"/Fast", Fast },
             { @"CommentLines", CommentLines },
             { @"UncommentLines", UncommentLines },
+            { @"ToggleCollapse", ToggleCollapse },
         };
 
         public static IEnumerable<string> Commands
@@ -411,6 +412,11 @@ namespace GhostWriter
         private static string UncommentLines(Match match)
         {
             return "[]^(k)^(u)[]";
+        }
+
+        private static string ToggleCollapse(Match match)
+        {
+            return "[]^(m)^(m)[]";
         }
 
         private static string UpMultiple(Match match)
