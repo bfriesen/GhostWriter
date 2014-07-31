@@ -373,16 +373,38 @@ namespace GhostWriter
 
         private void BtnExecuteClick(object sender, EventArgs e)
         {
+            RECT rect;
+            GetWindowRect(_targetApplication, out rect);
+
+            Cursor.Position =
+                new Point(
+                    rect.Left + ((rect.Right - rect.Left) / 2),
+                    rect.Top + ((rect.Bottom - rect.Top) / 2));
+
             SetForegroundWindow(_targetApplication);
-            // TODO: move the cursor to the center of the target application.
 
             GhostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData, () => SetForegroundWindow(Handle), () => SetForegroundWindow(_targetApplication));
 
             if (presentationModeToolStripMenuItem.Checked)
             {
+                Cursor.Position =
+                    new Point(Left + (Width / 2), Top + (Height / 2));
+
                 SetForegroundWindow(Handle);
-                // TODO: move the cursor to the center of this application.
             }
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT
+        {
+            public int Left;        // x position of upper-left corner
+            public int Top;         // y position of upper-left corner
+            public int Right;       // x position of lower-right corner
+            public int Bottom;      // y position of lower-right corner
         }
 
         private void BtnNextClick(object sender, EventArgs e)
