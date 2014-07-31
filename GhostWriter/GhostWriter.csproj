@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CaptureScreen.cs" />
     <Compile Include="DelayStrategy.cs" />
     <Compile Include="Demo.cs" />
     <Compile Include="MainForm.cs">

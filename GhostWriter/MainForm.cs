@@ -25,6 +25,9 @@ namespace GhostWriter
         private int _currentIndex;
         private IntPtr _targetApplication;
 
+        private readonly System.Threading.Timer _monitorTimer;
+        private TabPage _selectedTab;
+
         public MainForm()
         {
             InitializeComponent();
@@ -38,6 +41,9 @@ namespace GhostWriter
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_appDataPath));
             }
+
+            _monitorTimer = new System.Threading.Timer(x => SetPictureBoxImage());
+            _monitorTimer.Change(50, 50);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -365,11 +371,14 @@ namespace GhostWriter
         private void BtnExecuteClick(object sender, EventArgs e)
         {
             SetForegroundWindow(_targetApplication);
+            // TODO: move the cursor to the center of the target application.
+
             GhostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData, () => SetForegroundWindow(Handle), () => SetForegroundWindow(_targetApplication));
 
             if (presentationModeToolStripMenuItem.Checked)
             {
                 SetForegroundWindow(Handle);
+                // TODO: move the cursor to the center of this application.
             }
         }
 
@@ -771,6 +780,57 @@ namespace GhostWriter
         private void OptionToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             SaveAppData();
+        }
+
+        private volatile bool _running;
+
+        private void SetPictureBoxImage()
+        {
+            if (monitorApplicationToolStripMenuItem.Checked
+                && _selectedTab == tabAppMonitor)
+            {
+                if (_running)
+                {
+                    return;
+                }
+
+                _running = true;
+
+                var currentImage = pictureBox.Image;
+
+                Image nextImage = null;
+
+                try
+                {
+                    nextImage = CaptureScreen.CaptureWithCursor(_targetApplication);
+                }
+                catch
+                {
+                }
+
+                if (nextImage != null)
+                {
+                    pictureBox.Image = nextImage;
+                }
+
+                if (currentImage != null)
+                {
+                    try
+                    {
+                        currentImage.Dispose();
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                _running = false;
+            }
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _selectedTab = tabControl.TabPages[tabControl.SelectedIndex];
         }
     }
 }

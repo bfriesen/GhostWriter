@@ -51,6 +51,7 @@
             this.uncheckedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setInitialCodeOnLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.presentationModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.monitorApplicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExecute = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.btnPrevious = new System.Windows.Forms.Button();
@@ -77,6 +78,8 @@
             this.txtGhostKeyboardData = new System.Windows.Forms.RichTextBox();
             this.commandContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.lblStepNumberB = new System.Windows.Forms.Label();
+            this.tabAppMonitor = new System.Windows.Forms.TabPage();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             menuStrip = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -94,6 +97,8 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.tabAppMonitor.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -217,7 +222,8 @@
             this.noSoundToolStripMenuItem,
             this.typingSpeedToolStripMenuItem,
             this.setInitialCodeOnLoadToolStripMenuItem,
-            this.presentationModeToolStripMenuItem});
+            this.presentationModeToolStripMenuItem,
+            this.monitorApplicationToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -283,6 +289,13 @@
             this.presentationModeToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.presentationModeToolStripMenuItem.Text = "Presentation Mode";
             this.presentationModeToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.OptionToolStripMenuItem_CheckedChanged);
+            // 
+            // monitorApplicationToolStripMenuItem
+            // 
+            this.monitorApplicationToolStripMenuItem.CheckOnClick = true;
+            this.monitorApplicationToolStripMenuItem.Name = "monitorApplicationToolStripMenuItem";
+            this.monitorApplicationToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.monitorApplicationToolStripMenuItem.Text = "Monitor Application";
             // 
             // btnExecute
             // 
@@ -373,12 +386,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabPresentation);
             this.tabControl.Controls.Add(this.tabAutoTyping);
+            this.tabControl.Controls.Add(this.tabAppMonitor);
             this.tabControl.Location = new System.Drawing.Point(0, 27);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(900, 552);
             this.tabControl.TabIndex = 7;
             this.toolTip.SetToolTip(this.tabControl, "Presentation Notes");
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             this.tabControl.TabIndexChanged += new System.EventHandler(this.TabControl_TabIndexChanged);
             // 
             // tabPresentation
@@ -604,6 +619,26 @@
             this.lblStepNumberB.Size = new System.Drawing.Size(886, 20);
             this.lblStepNumberB.TabIndex = 2;
             // 
+            // tabAppMonitor
+            // 
+            this.tabAppMonitor.Controls.Add(this.pictureBox);
+            this.tabAppMonitor.Location = new System.Drawing.Point(4, 22);
+            this.tabAppMonitor.Name = "tabAppMonitor";
+            this.tabAppMonitor.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAppMonitor.Size = new System.Drawing.Size(892, 526);
+            this.tabAppMonitor.TabIndex = 2;
+            this.tabAppMonitor.Text = "App Monitor";
+            this.tabAppMonitor.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox
+            // 
+            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Size = new System.Drawing.Size(886, 520);
+            this.pictureBox.TabIndex = 0;
+            this.pictureBox.TabStop = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -635,6 +670,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.tabAppMonitor.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -688,6 +725,9 @@
         private System.Windows.Forms.Button btnPushToApplication;
         private System.Windows.Forms.ToolStripMenuItem openRecentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem presentationModeToolStripMenuItem;
+        private System.Windows.Forms.TabPage tabAppMonitor;
+        private System.Windows.Forms.PictureBox pictureBox;
+        private System.Windows.Forms.ToolStripMenuItem monitorApplicationToolStripMenuItem;
 
     }
 }
