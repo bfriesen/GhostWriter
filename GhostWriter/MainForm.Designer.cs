@@ -17,7 +17,10 @@
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
+
+            GhostKeyboard.TearDown();
         }
 
         #region Windows Form Designer generated code

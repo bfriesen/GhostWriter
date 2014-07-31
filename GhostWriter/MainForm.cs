@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -31,6 +32,8 @@ namespace GhostWriter
         public MainForm()
         {
             InitializeComponent();
+
+            GhostKeyboard.Setup();
 
             foreach (var command in GhostKeyboard.Commands)
             {
