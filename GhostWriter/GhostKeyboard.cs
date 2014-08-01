@@ -31,6 +31,7 @@ namespace GhostWriter
         private readonly Action _setFocusOnMainForm;
         private readonly Action _setFocusOnTargetApplication;
         private readonly Action<int> _setActiveTabIndex;
+        private readonly Action _swapForegroundWindows;
 
         private volatile bool _abort;
         private volatile bool _fast;
@@ -65,11 +66,13 @@ namespace GhostWriter
         public GhostKeyboard(
             Action setFocusOnMainForm,
             Action setFocusOnTargetApplication,
-            Action<int> setActiveTabIndex)
+            Action<int> setActiveTabIndex,
+            Action swapForegroundWindows)
         {
             _setFocusOnMainForm = setFocusOnMainForm;
             _setFocusOnTargetApplication = setFocusOnTargetApplication;
             _setActiveTabIndex = setActiveTabIndex;
+            _swapForegroundWindows = swapForegroundWindows;
 
             _proc = HookCallback;
             _hookID = SetHook(_proc);
@@ -611,38 +614,49 @@ namespace GhostWriter
         {
             var vkCode = (Keys)Marshal.ReadInt32(lParam);
 
-            if (_isTyping
-                && nCode >= 0
+            if (nCode >= 0
                 && (int)wParam == WM_SYSKEYDOWN
-                && Control.ModifierKeys == Keys.Alt
-                && vkCode != Keys.Tab
-                && vkCode == (Keys.MButton | Keys.Space | Keys.F17))
+                && Control.ModifierKeys == Keys.Alt)
             {
-                _setFocusOnMainForm();
-
-                var dialog = new BreakDialog();
-                dialog.ShowDialog();
-
-                switch (dialog.BreakDialogResult)
+                if (_isTyping)
                 {
-                    case BreakDialogResult.GoFast:
-                        _fast = true;
-                        break;
-                    case BreakDialogResult.Abort:
-                        _abort = true;
-                        break;
-                    case BreakDialogResult.GoToPresentationTab:
-                        _setActiveTabIndex(0);
-                        break;
-                    case BreakDialogResult.GoToAutoTypingTab:
-                        _setActiveTabIndex(1);
-                        break;
-                    case BreakDialogResult.GoToAppMonitorTab:
-                        _setActiveTabIndex(2);
-                        break;
-                }
+                    if (vkCode == (Keys.MButton | Keys.Space | Keys.F17))
+                    {
+                        _setFocusOnMainForm();
 
-                _setFocusOnTargetApplication();
+                        var dialog = new BreakDialog();
+                        dialog.ShowDialog();
+
+                        switch (dialog.BreakDialogResult)
+                        {
+                            case BreakDialogResult.GoFast:
+                                _fast = true;
+                                break;
+                            case BreakDialogResult.Abort:
+                                _abort = true;
+                                break;
+                            case BreakDialogResult.GoToPresentationTab:
+                                _setActiveTabIndex(0);
+                                break;
+                            case BreakDialogResult.GoToAutoTypingTab:
+                                _setActiveTabIndex(1);
+                                break;
+                            case BreakDialogResult.GoToAppMonitorTab:
+                                _setActiveTabIndex(2);
+                                break;
+                        }
+
+                        _setFocusOnTargetApplication();
+                    }
+                }
+                else
+                {
+                    if (vkCode == (Keys)220)
+                    {
+                        _swapForegroundWindows();
+                        return (IntPtr)1;
+                    }
+                }
             }
 
             return CallNextHookEx(_hookID, nCode, wParam, lParam);

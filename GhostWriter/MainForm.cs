@@ -31,6 +31,8 @@ namespace GhostWriter
 
         private TabPage _selectedTab;
 
+        private bool _swapFlag;
+
         public MainForm()
         {
             InitializeComponent();
@@ -38,7 +40,8 @@ namespace GhostWriter
             _ghostKeyboard  = new GhostKeyboard(
                 () => SetForegroundWindow(Handle),
                 () => SetForegroundWindow(_targetApplication),
-                index => tabControl.SelectedIndex = index);
+                index => tabControl.SelectedIndex = index,
+                SwapForegroundWindows);
 
             foreach (var command in GhostKeyboard.Commands)
             {
@@ -397,6 +400,12 @@ namespace GhostWriter
 
                 SetForegroundWindow(Handle);
             }
+        }
+
+        private void SwapForegroundWindows()
+        {
+            SetForegroundWindow(_swapFlag ? Handle : _targetApplication);
+            _swapFlag = !_swapFlag;
         }
 
         [DllImport("user32.dll")]
@@ -778,6 +787,27 @@ namespace GhostWriter
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Alt)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.P:
+                        tabControl.SelectedIndex = 0;
+                        break;
+                    case Keys.T:
+                        tabControl.SelectedIndex = 1;
+                        break;
+                    case Keys.M:
+                        tabControl.SelectedIndex = 2;
+                        break;
+                    default:
+                        return;
+                }
+
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+
             if (presentationModeToolStripMenuItem.Checked)
             {
                 switch (e.KeyData)
