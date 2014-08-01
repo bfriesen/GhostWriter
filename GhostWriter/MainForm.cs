@@ -696,10 +696,20 @@ namespace GhostWriter
             if (_targetApplication != IntPtr.Zero)
             {
                 SetForegroundWindow(_targetApplication);
-                Clipboard.SetText(txtExpectedCode.Text);
+
+                if (!string.IsNullOrEmpty(txtExpectedCode.Text))
+                {
+                    Clipboard.SetText(txtExpectedCode.Text);
+                }
+
                 _ghostKeyboard.TypeRaw("^(a){DEL}");
-                Thread.Sleep(1000);
-                _ghostKeyboard.TypeRaw("^(v)");
+
+                if (!string.IsNullOrEmpty(txtExpectedCode.Text))
+                {
+                    Thread.Sleep(1000);
+                    _ghostKeyboard.TypeRaw("^(v)");
+                }
+
                 SetForegroundWindow(Handle);
             }
         }
@@ -869,7 +879,7 @@ namespace GhostWriter
                         }
                         break;
                     case Keys.F5:
-                    case Keys.Escape:
+                    //case Keys.Escape:
                         if (btnExecute.Enabled)
                         {
                             BtnExecuteClick(null, null);
