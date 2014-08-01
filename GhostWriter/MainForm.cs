@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -114,8 +113,7 @@ namespace GhostWriter
                 _currentDemoFileName = dialog.FileName;
                 InitializeDemo();
 
-                if (!openRecentToolStripMenuItem.DropDownItems.Cast<ToolStripItem>()
-                    .Any(x => x.Text == _currentDemoFileName))
+                if (openRecentToolStripMenuItem.DropDownItems.Cast<ToolStripItem>().All(x => x.Text != _currentDemoFileName))
                 {
                     var recentFileToolStripMenuItem = new ToolStripMenuItem(_currentDemoFileName);
                     recentFileToolStripMenuItem.Click += recentFileToolStripMenuItem_Click;
@@ -492,13 +490,6 @@ namespace GhostWriter
             SaveAppData();
         }
 
-        private void HighlightToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            var owner = highlightToolStripMenuItem.Owner as ContextMenuStrip;
-            var textBox = owner.SourceControl as RichTextBox;
-            textBox.SelectionBackColor = Color.Yellow;
-        }
-
         private void OnTextBoxKeyDown(object sender, KeyEventArgs e)
         {
             var textBox = (RichTextBox)sender;
@@ -506,16 +497,23 @@ namespace GhostWriter
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.H)
             {
                 textBox.SelectionBackColor =
-                    textBox.SelectionBackColor == Color.White
-                        ? Color.Yellow
-                        : Color.White;
+                    textBox.SelectionBackColor == Color.Yellow
+                        ? textBox.BackColor
+                        : Color.Yellow;
             }
+        }
+
+        private void HighlightToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            var owner = (ContextMenuStrip)highlightToolStripMenuItem.Owner;
+            var textBox = (RichTextBox)owner.SourceControl;
+            textBox.SelectionBackColor = Color.Yellow;
         }
 
         private void RemoveHighlightsToolStripMenuItemClick(object sender, EventArgs e)
         {
-            var owner = highlightToolStripMenuItem.Owner as ContextMenuStrip;
-            var textBox = owner.SourceControl as RichTextBox;
+            var owner = (ContextMenuStrip)highlightToolStripMenuItem.Owner;
+            var textBox = (RichTextBox)owner.SourceControl;
             textBox.SelectionBackColor = textBox.BackColor;
 
             if (ReferenceEquals(textBox, txtExpectedCode))
@@ -647,8 +645,9 @@ namespace GhostWriter
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
 
-        // ReSharper disable UnusedMember.Local
-        // ReSharper disable UnassignedField.Local
+        // ReSharper disable UnusedField.Compiler
+        // ReSharper disable InconsistentNaming
+        // ReSharper disable UnassignedField.Compiler
         private struct WindowPlacement
         {
             public int length;
@@ -658,8 +657,9 @@ namespace GhostWriter
             public Point ptMaxPosition;
             public Rectangle rcNormalPosition;
         }
-        // ReSharper restore UnassignedField.Local
-        // ReSharper restore UnusedMember.Local
+        // ReSharper restore UnassignedField.Compiler
+        // ReSharper restore InconsistentNaming
+        // ReSharper restore UnusedField.Compiler
 
         /// <summary>Enumeration of the different ways of showing a window using 
         /// ShowWindow</summary>
