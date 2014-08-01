@@ -305,6 +305,7 @@ namespace GhostWriter
             this.monitorApplicationToolStripMenuItem.Name = "monitorApplicationToolStripMenuItem";
             this.monitorApplicationToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.monitorApplicationToolStripMenuItem.Text = "Monitor Application";
+            this.monitorApplicationToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OptionToolStripMenuItem_CheckedChanged);
             // 
             // btnExecute
             // 

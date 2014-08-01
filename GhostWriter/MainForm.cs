@@ -448,6 +448,7 @@ namespace GhostWriter
         private void NoSoundToolStripMenuItemCheckedChanged(object sender, EventArgs e)
         {
             Sound.Enabled = !noSoundToolStripMenuItem.Checked;
+            SaveAppData();
         }
 
         private void NormalToolStripMenuItemCheckedChanged(object sender, EventArgs e)
@@ -459,6 +460,8 @@ namespace GhostWriter
 
                 _ghostKeyboard.DelayStrategy = DelayStrategy.Normal;
             }
+
+            SaveAppData();
         }
 
         private void FastToolStripMenuItemCheckedChanged(object sender, EventArgs e)
@@ -470,6 +473,8 @@ namespace GhostWriter
 
                 _ghostKeyboard.DelayStrategy = DelayStrategy.Fast;
             }
+
+            SaveAppData();
         }
 
         private void UncheckedToolStripMenuItemCheckedChanged(object sender, EventArgs e)
@@ -481,6 +486,8 @@ namespace GhostWriter
 
                 _ghostKeyboard.DelayStrategy = DelayStrategy.Unchecked;
             }
+
+            SaveAppData();
         }
 
         private void HighlightToolStripMenuItemClick(object sender, EventArgs e)
@@ -701,6 +708,9 @@ namespace GhostWriter
         {
             public bool SetInitialCodeOnLoad { get; set; }
             public bool PresentationMode { get; set; }
+            public bool MonitorApplication { get; set; }
+            public bool NoSound { get; set; }
+            public DelayStrategy DelayStrategy { get; set; }
 
             [XmlElement("RecentFile")]
             public List<string> RecentFiles { get; set; }
@@ -715,6 +725,21 @@ namespace GhostWriter
             
             appData.SetInitialCodeOnLoad = setInitialCodeOnLoadToolStripMenuItem.Checked;
             appData.PresentationMode = presentationModeToolStripMenuItem.Checked;
+            appData.MonitorApplication = monitorApplicationToolStripMenuItem.Checked;
+            appData.NoSound = noSoundToolStripMenuItem.Checked;
+
+            if (normalToolStripMenuItem.Checked)
+            {
+                appData.DelayStrategy = DelayStrategy.Normal;
+            }
+            else if (fastToolStripMenuItem.Checked)
+            {
+                appData.DelayStrategy = DelayStrategy.Fast;
+            }
+            else
+            {
+                appData.DelayStrategy = DelayStrategy.Unchecked;
+            }
             
             foreach (ToolStripItem item in openRecentToolStripMenuItem.DropDownItems)
             {
@@ -752,9 +777,6 @@ namespace GhostWriter
                 }
             }
 
-            setInitialCodeOnLoadToolStripMenuItem.Checked = appData.SetInitialCodeOnLoad;
-            presentationModeToolStripMenuItem.Checked = appData.PresentationMode;
-
             if (appData.RecentFiles.Count > 0)
             {
                 foreach (ToolStripMenuItem recentFileToolStripMenuItem in openRecentToolStripMenuItem.DropDownItems)
@@ -776,6 +798,28 @@ namespace GhostWriter
             else
             {
                 openRecentToolStripMenuItem.Visible = false;
+            }
+
+            setInitialCodeOnLoadToolStripMenuItem.Checked = appData.SetInitialCodeOnLoad;
+            presentationModeToolStripMenuItem.Checked = appData.PresentationMode;
+            monitorApplicationToolStripMenuItem.Checked = appData.MonitorApplication;
+            noSoundToolStripMenuItem.Checked = appData.NoSound;
+
+            normalToolStripMenuItem.Checked = false;
+            fastToolStripMenuItem.Checked = false;
+            uncheckedToolStripMenuItem.Checked = false;
+
+            switch (appData.DelayStrategy)
+            {
+                case DelayStrategy.Normal:
+                    normalToolStripMenuItem.Checked = true;
+                    break;
+                case DelayStrategy.Fast:
+                    fastToolStripMenuItem.Checked = true;
+                    break;
+                default:
+                    uncheckedToolStripMenuItem.Checked = true;
+                    break;
             }
         }
 
