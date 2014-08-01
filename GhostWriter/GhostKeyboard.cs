@@ -10,17 +10,33 @@ using System.Windows.Forms;
 
 namespace GhostWriter
 {
-    public static class GhostKeyboard
+    public sealed class GhostKeyboard : IDisposable
     {
-        private const string escapeRegexPattern = @"[+\^%~(){}]|\[(?!`)|(?<!`)\]";
-        private static readonly Regex escapeRegex = new Regex(escapeRegexPattern);
-        private static readonly Regex unescapeRegex = new Regex(@"\{(" + escapeRegexPattern + @")\}");
-        private static readonly Regex unescapeNewlineRegex = new Regex(@"(?<!\{)~(?!\})");
-        private static readonly Regex pauseRegex = new Regex(@"\[(Pause (\d+))\]");
+        private const string _escapeRegexPattern = @"[+\^%~(){}]|\[(?!`)|(?<!`)\]";
+        private static readonly Regex _escapeRegex = new Regex(_escapeRegexPattern);
+        private static readonly Regex _unescapeRegex = new Regex(@"\{(" + _escapeRegexPattern + @")\}");
+        private static readonly Regex _unescapeNewlineRegex = new Regex(@"(?<!\{)~(?!\})");
+        private static readonly Regex _pauseRegex = new Regex(@"\[(Pause (\d+(?:\.\d+)|\.\d+))\]");
 
-        private static readonly Random random = new Random();
+        private readonly Random _random = new Random();
 
-        private static readonly IEnumerable<KeyValuePair<string, MatchEvaluator>> commands = new Dictionary<string, MatchEvaluator>
+        private const int WH_KEYBOARD_LL = 13;
+        private const int WM_KEYDOWN = 0x0100;
+        private const int WM_KEYUP = 0x0101;
+        private const int WM_SYSKEYDOWN = 0x0104;
+
+        private readonly LowLevelKeyboardProc _proc;
+        private readonly IntPtr _hookID = IntPtr.Zero;
+
+        private readonly Action _setFocusOnMainForm;
+        private readonly Action _setFocusOnTargetApplication;
+        private readonly Action<int> _setActiveTabIndex;
+
+        private volatile bool _abort;
+        private volatile bool _fast;
+        private volatile bool _isTyping;
+
+        private static readonly IEnumerable<KeyValuePair<string, MatchEvaluator>> _commands = new Dictionary<string, MatchEvaluator>
         {
             { @"GotoLine (\d+)", GotoLine },
             { @"End", End },
@@ -46,34 +62,77 @@ namespace GhostWriter
             { @"ToggleCollapse", ToggleCollapse },
         };
 
-        private volatile static bool _abort;
+        public GhostKeyboard(
+            Action setFocusOnMainForm,
+            Action setFocusOnTargetApplication,
+            Action<int> setActiveTabIndex)
+        {
+            _setFocusOnMainForm = setFocusOnMainForm;
+            _setFocusOnTargetApplication = setFocusOnTargetApplication;
+            _setActiveTabIndex = setActiveTabIndex;
+
+            _proc = HookCallback;
+            _hookID = SetHook(_proc);
+        }
+
+        ~GhostKeyboard()
+        {
+            Dispose(false);
+        }
 
         public static IEnumerable<string> Commands
         {
-            get { return new[] { "[Pause #]", "[Wait]" }.Concat(commands.Select(kvp => kvp.Key).Select(commandRegex => "[" + commandRegex.Replace("(", "").Replace(")", "").Replace(@"-?\d+", "#").Replace(@"\d+", "#") + "]")); }
+            get { return new[] { "[Pause #]", "[Wait]" }.Concat(_commands.Select(kvp => kvp.Key).Select(commandRegex => "[" + commandRegex.Replace("(", "").Replace(")", "").Replace(@"-?\d+", "#").Replace(@"\d+", "#") + "]")); }
         }
 
-        public static DelayStrategy DelayStrategy { get; set; }
+        public DelayStrategy DelayStrategy { get; set; }
+        public bool IsMonitoring { get; set; }
 
-        public static void TypeRaw(string input)
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                
+            }
+
+            UnhookWindowsHookEx(_hookID);
+        }
+
+        public void TypeRaw(string input)
         {
             SendKeys.SendWait(input);
         }
 
-        public static void Abort()
+        public void Abort()
         {
             _abort = true;
         }
 
-        public static void Type(string rawInput, Action setFocusOnMainForm, Action setFocusOnTargetApplication)
+        public void Type(string rawInput)
         {
             _abort = false;
+            _fast = false;
+            _isTyping = true;
 
             var escapedInput = EscapeInput(rawInput ?? "");
 
             var sb = new StringBuilder();
             for (int i = 0; i < escapedInput.Length; i++)
             {
+                if (_abort)
+                {
+                    return;
+                }
+
                 var c = escapedInput[i];
                 sb.Append(c);
                 if (c == '{')
@@ -86,98 +145,110 @@ namespace GhostWriter
                 }
                 else if (c == '[')
                 {
-                    if (escapedInput[i + 1] == ']')
-                    {
-                        // A command wrapped in [] does not have a delay...
-                        AddAndExecuteFastCommand(escapedInput, sb, ref i);
-                        continue;
-                    }
-
-                    if (escapedInput[i + 1] == '`')
-                    {
-                        // When wrapped in [`text to paste`] indicates a paste command
-                        ExecutePasteCommand(escapedInput, ref i);
-                        continue;
-                    }
-
-                    if (pauseRegex.IsMatch(escapedInput, i))
-                    {
-                        var match = pauseRegex.Match(escapedInput, i);
-                        var seconds = int.Parse(match.Groups[2].Value);
-
-                        if (DelayStrategy != DelayStrategy.Unchecked)
-                        {
-                            Sleep(1000 * seconds);
-                        }
-
-                        i = match.Index + match.Length - 1;
-                        sb.Clear();
-                        continue;
-                    }
-
-                    if (escapedInput.Substring(i).StartsWith("[Wait]"))
-                    {
-                        setFocusOnMainForm();
-
-                        var dialog = new WaitDialog();
-                        dialog.ShowDialog();
-
-                        i = i + "Wait".Length + 1;
-                        sb.Clear();
-
-                        setFocusOnTargetApplication();
-
-                        continue;
-                    }
-                }
-
-                var key = sb.ToString();
-
-                if (_abort)
-                {
-                    return;
-                }
-
-                if (key == "~")
-                {
-                    Sound.PlayCarriageReturn();
-
-                    if (DelayStrategy == DelayStrategy.Normal)
-                    {
-                        Sleep(random.Next(200, 300));
-                    }
-                    else if (DelayStrategy == DelayStrategy.Fast)
-                    {
-                        Sleep(210);
-                    }
-
-                    SendKeys.SendWait(key);
+                    ProcessCommand(escapedInput, sb, ref i);
                 }
                 else
                 {
-                    if (key == " ")
-                    {
-                        Sound.PlaySpace();
-                    }
-                    else
-                    {
-                        Sound.PlayKeystroke();
-                    }
+                    var key = sb.ToString();
 
                     SendKeys.SendWait(key);
 
-                    if (DelayStrategy == DelayStrategy.Normal)
+                    if (!_fast)
                     {
-                        Sleep(random.NextDouble() > 0.80 ? random.Next(80, 160) : random.Next(30, 90));
+                        int milliseconds;
+
+                        if (DelayStrategy == DelayStrategy.Normal)
+                        {
+                            milliseconds =
+                                IsEnter(key)
+                                    ? _random.Next(200, 300)
+                                    : (_random.NextDouble() > 0.80 ? _random.Next(80, 160) : _random.Next(30, 90));
+                        }
+                        else if (DelayStrategy == DelayStrategy.Fast)
+                        {
+                            milliseconds = IsEnter(key) ? 210 : 50;
+                        }
+                        else
+                        {
+                            milliseconds = 0;
+                        }
+
+                        switch (key)
+                        {
+                            case " ":
+                                Sound.PlaySpace();
+                                break;
+                            case "~":
+                                Sound.PlayCarriageReturn();
+                                break;
+                            default:
+                                Sound.PlayKeystroke();
+                                break;
+                        }
+
+                        Sleep(ReduceIfIsMonitoring(milliseconds));
                     }
-                    else if (DelayStrategy == DelayStrategy.Fast)
-                    {
-                        Sleep(50);
-                    }
+
+                    sb.Clear();
+                }
+            }
+
+            _isTyping = false;
+        }
+
+        private void ProcessCommand(string escapedInput, StringBuilder sb, ref int i)
+        {
+            if (escapedInput[i + 1] == ']')
+            {
+                // A command wrapped in [] does not have a delay...
+                AddAndExecuteFastCommand(escapedInput, sb, ref i);
+            }
+            else if (escapedInput[i + 1] == '`')
+            {
+                // When wrapped in [`text to paste`] indicates a paste command
+                ExecutePasteCommand(escapedInput, ref i);
+            }
+            else if (_pauseRegex.IsMatch(escapedInput, i))
+            {
+                var match = _pauseRegex.Match(escapedInput, i);
+                var seconds = double.Parse(match.Groups[2].Value);
+
+                if (DelayStrategy != DelayStrategy.Unchecked)
+                {
+                    Sleep((int)(1000 * seconds));
                 }
 
+                i = match.Index + match.Length - 1;
                 sb.Clear();
+                _fast = false;
             }
+            else if (escapedInput.Substring(i).StartsWith("[Wait]"))
+            {
+                _setFocusOnMainForm();
+
+                var dialog = new WaitDialog();
+                dialog.ShowDialog();
+
+                i = i + "Wait".Length + 1;
+                sb.Clear();
+                _fast = false;
+
+                _setFocusOnTargetApplication();
+            }
+            else
+            {
+                Debug.Fail("Unknown key sequence starting with '['.");
+            }
+        }
+
+        private static bool IsEnter(string s)
+        {
+            return s == "~";
+        }
+
+        private int ReduceIfIsMonitoring(int value)
+        {
+            return IsMonitoring ? (int)(value * (3.0 / 5.0)) : value;
         }
 
         private static void Sleep(int milliseconds)
@@ -187,7 +258,7 @@ namespace GhostWriter
 
         public static string EscapeInput(string rawInput)
         {
-            var escapedInput = escapeRegex.Replace(rawInput, "{$0}");
+            var escapedInput = _escapeRegex.Replace(rawInput, "{$0}");
             escapedInput = escapedInput.Replace("\r\n", "~").Replace("\n", "~");
             escapedInput = InsertCommands(escapedInput);
             return escapedInput;
@@ -195,7 +266,7 @@ namespace GhostWriter
 
         private static string InsertCommands(string input)
         {
-            var output = commands.Aggregate(input, (current, command) => Regex.Replace(current, @"{\[}" + command.Key + @"{\]}", command.Value));
+            var output = _commands.Aggregate(input, (current, command) => Regex.Replace(current, @"{\[}" + command.Key + @"{\]}", command.Value));
             return Regex.Replace(output, @"{\[}(Pause \d+|Wait){\]}", match => "[" + match.Groups[1] + "]");
         }
 
@@ -284,8 +355,8 @@ namespace GhostWriter
             i += 1;
 
             var pasteContents =
-                unescapeRegex.Replace(
-                    unescapeNewlineRegex.Replace(sb.ToString(), "\r\n"),
+                _unescapeRegex.Replace(
+                    _unescapeNewlineRegex.Replace(sb.ToString(), "\r\n"),
                     "$1");
 
             Clipboard.SetText(pasteContents);
@@ -525,22 +596,6 @@ namespace GhostWriter
             return "[]{Right}[]";
         }
 
-        private const int WH_KEYBOARD_LL = 13;
-        private const int WM_KEYDOWN = 0x0100;
-        private const int WM_SYSKEYDOWN = 0x0104;
-        private static readonly LowLevelKeyboardProc _proc = HookCallback;
-        private static IntPtr _hookID = IntPtr.Zero;
-
-        public static void Setup()
-        {
-            _hookID = SetHook(_proc);
-        }
-
-        public static void TearDown()
-        {
-            UnhookWindowsHookEx(_hookID);
-        }
-
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
             using (Process curProcess = Process.GetCurrentProcess())
@@ -552,15 +607,42 @@ namespace GhostWriter
             }
         }
 
-        private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && (wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN))
+            var vkCode = (Keys)Marshal.ReadInt32(lParam);
+
+            if (_isTyping
+                && nCode >= 0
+                && (int)wParam == WM_SYSKEYDOWN
+                && Control.ModifierKeys == Keys.Alt
+                && vkCode != Keys.Tab
+                && vkCode == (Keys.MButton | Keys.Space | Keys.F17))
             {
-                int vkCode = Marshal.ReadInt32(lParam);
-                if ((Keys)vkCode == Keys.Oem5 && Control.ModifierKeys == Keys.Alt)
+                _setFocusOnMainForm();
+
+                var dialog = new BreakDialog();
+                dialog.ShowDialog();
+
+                switch (dialog.BreakDialogResult)
                 {
-                    _abort = true;
+                    case BreakDialogResult.GoFast:
+                        _fast = true;
+                        break;
+                    case BreakDialogResult.Abort:
+                        _abort = true;
+                        break;
+                    case BreakDialogResult.GoToPresentationTab:
+                        _setActiveTabIndex(0);
+                        break;
+                    case BreakDialogResult.GoToAutoTypingTab:
+                        _setActiveTabIndex(1);
+                        break;
+                    case BreakDialogResult.GoToAppMonitorTab:
+                        _setActiveTabIndex(2);
+                        break;
                 }
+
+                _setFocusOnTargetApplication();
             }
 
             return CallNextHookEx(_hookID, nCode, wParam, lParam);

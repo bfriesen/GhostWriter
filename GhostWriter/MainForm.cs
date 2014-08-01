@@ -21,19 +21,24 @@ namespace GhostWriter
                 "GhostWriter",
                 "appData.xml");
 
+        private readonly GhostKeyboard _ghostKeyboard;
+        private readonly System.Threading.Timer _monitorTimer;
+
         private string _currentDemoFileName;
         private Demo _demo;
         private int _currentIndex;
         private IntPtr _targetApplication;
 
-        private readonly System.Threading.Timer _monitorTimer;
         private TabPage _selectedTab;
 
         public MainForm()
         {
             InitializeComponent();
 
-            GhostKeyboard.Setup();
+            _ghostKeyboard  = new GhostKeyboard(
+                () => SetForegroundWindow(Handle),
+                () => SetForegroundWindow(_targetApplication),
+                index => tabControl.SelectedIndex = index);
 
             foreach (var command in GhostKeyboard.Commands)
             {
@@ -132,7 +137,7 @@ namespace GhostWriter
                 if (_targetApplication != IntPtr.Zero)
                 {
                     SetForegroundWindow(_targetApplication);
-                    GhostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode ?? ""));
+                    _ghostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode ?? ""));
                     SetForegroundWindow(Handle);
                 }
             }
@@ -383,7 +388,7 @@ namespace GhostWriter
 
             SetForegroundWindow(_targetApplication);
 
-            GhostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData, () => SetForegroundWindow(Handle), () => SetForegroundWindow(_targetApplication));
+            _ghostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData);
 
             if (presentationModeToolStripMenuItem.Checked)
             {
@@ -443,7 +448,7 @@ namespace GhostWriter
                 fastToolStripMenuItem.Checked = false;
                 uncheckedToolStripMenuItem.Checked = false;
 
-                GhostKeyboard.DelayStrategy = DelayStrategy.Normal;
+                _ghostKeyboard.DelayStrategy = DelayStrategy.Normal;
             }
         }
 
@@ -454,7 +459,7 @@ namespace GhostWriter
                 normalToolStripMenuItem.Checked = false;
                 uncheckedToolStripMenuItem.Checked = false;
 
-                GhostKeyboard.DelayStrategy = DelayStrategy.Fast;
+                _ghostKeyboard.DelayStrategy = DelayStrategy.Fast;
             }
         }
 
@@ -465,7 +470,7 @@ namespace GhostWriter
                 normalToolStripMenuItem.Checked = false;
                 fastToolStripMenuItem.Checked = false;
 
-                GhostKeyboard.DelayStrategy = DelayStrategy.Unchecked;
+                _ghostKeyboard.DelayStrategy = DelayStrategy.Unchecked;
             }
         }
 
@@ -676,9 +681,9 @@ namespace GhostWriter
             {
                 SetForegroundWindow(_targetApplication);
                 Clipboard.SetText(txtExpectedCode.Text);
-                GhostKeyboard.TypeRaw("^(a){DEL}");
+                _ghostKeyboard.TypeRaw("^(a){DEL}");
                 Thread.Sleep(1000);
-                GhostKeyboard.TypeRaw("^(v)");
+                _ghostKeyboard.TypeRaw("^(v)");
                 SetForegroundWindow(Handle);
             }
         }

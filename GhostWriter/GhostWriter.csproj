@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BreakDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BreakDialog.Designer.cs">
+      <DependentUpon>BreakDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="CaptureScreen.cs" />
     <Compile Include="DelayStrategy.cs" />
     <Compile Include="Demo.cs" />
@@ -73,6 +79,9 @@
     <Compile Include="WaitDialog.Designer.cs">
       <DependentUpon>WaitDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="BreakDialog.resx">
+      <DependentUpon>BreakDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

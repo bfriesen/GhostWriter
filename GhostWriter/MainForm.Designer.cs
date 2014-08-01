@@ -20,7 +20,7 @@
 
             base.Dispose(disposing);
 
-            GhostKeyboard.TearDown();
+            _ghostKeyboard.Dispose();
         }
 
         #region Windows Form Designer generated code
