@@ -1,4 +1,6 @@
-﻿namespace GhostWriter
+﻿using System.Threading;
+
+namespace GhostWriter
 {
     partial class MainForm
     {
@@ -21,6 +23,10 @@
             base.Dispose(disposing);
 
             _ghostKeyboard.Dispose();
+            _monitorTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            var waitHandle = new AutoResetEvent(false);
+            _monitorTimer.Dispose(waitHandle);
+            waitHandle.WaitOne();
         }
 
         #region Windows Form Designer generated code
