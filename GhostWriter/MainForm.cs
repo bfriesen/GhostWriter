@@ -33,6 +33,8 @@ namespace GhostWriter
 
         private bool _swapFlag;
 
+        private volatile bool _running;
+
         public MainForm()
         {
             InitializeComponent();
@@ -503,7 +505,10 @@ namespace GhostWriter
 
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.H)
             {
-                textBox.SelectionBackColor = Color.Yellow;
+                textBox.SelectionBackColor =
+                    textBox.SelectionBackColor == Color.White
+                        ? Color.Yellow
+                        : Color.White;
             }
         }
 
@@ -730,13 +735,12 @@ namespace GhostWriter
         {
             var appData = new AppData
             {
-                RecentFiles = new List<string>()
+                RecentFiles = new List<string>(),
+                SetInitialCodeOnLoad = setInitialCodeOnLoadToolStripMenuItem.Checked,
+                PresentationMode = presentationModeToolStripMenuItem.Checked,
+                MonitorApplication = monitorApplicationToolStripMenuItem.Checked,
+                NoSound = noSoundToolStripMenuItem.Checked
             };
-            
-            appData.SetInitialCodeOnLoad = setInitialCodeOnLoadToolStripMenuItem.Checked;
-            appData.PresentationMode = presentationModeToolStripMenuItem.Checked;
-            appData.MonitorApplication = monitorApplicationToolStripMenuItem.Checked;
-            appData.NoSound = noSoundToolStripMenuItem.Checked;
 
             if (normalToolStripMenuItem.Checked)
             {
@@ -895,8 +899,6 @@ namespace GhostWriter
         {
             SaveAppData();
         }
-
-        private volatile bool _running;
 
         private void SetPictureBoxImage()
         {
