@@ -152,51 +152,56 @@ namespace GhostWriter
                 }
                 else
                 {
-                    var key = sb.ToString();
-
-                    SendKeys.SendWait(key);
-
-                    if (!_fast)
-                    {
-                        int milliseconds;
-
-                        if (DelayStrategy == DelayStrategy.Normal)
-                        {
-                            milliseconds =
-                                IsEnter(key)
-                                    ? _random.Next(200, 300)
-                                    : (_random.NextDouble() > 0.80 ? _random.Next(80, 160) : _random.Next(30, 90));
-                        }
-                        else if (DelayStrategy == DelayStrategy.Fast)
-                        {
-                            milliseconds = IsEnter(key) ? 210 : 50;
-                        }
-                        else
-                        {
-                            milliseconds = 0;
-                        }
-
-                        switch (key)
-                        {
-                            case " ":
-                                Sound.PlaySpace();
-                                break;
-                            case "~":
-                                Sound.PlayCarriageReturn();
-                                break;
-                            default:
-                                Sound.PlayKeystroke();
-                                break;
-                        }
-
-                        Sleep(ReduceIfIsMonitoring(milliseconds));
-                    }
-
-                    sb.Clear();
+                    ProcessKey(sb);
                 }
             }
 
             _isTyping = false;
+        }
+
+        private void ProcessKey(StringBuilder sb)
+        {
+            var key = sb.ToString();
+
+            SendKeys.SendWait(key);
+
+            if (!_fast)
+            {
+                int milliseconds;
+
+                if (DelayStrategy == DelayStrategy.Normal)
+                {
+                    milliseconds =
+                        IsEnter(key)
+                            ? _random.Next(200, 300)
+                            : (_random.NextDouble() > 0.80 ? _random.Next(80, 160) : _random.Next(30, 90));
+                }
+                else if (DelayStrategy == DelayStrategy.Fast)
+                {
+                    milliseconds = IsEnter(key) ? 210 : 50;
+                }
+                else
+                {
+                    milliseconds = 0;
+                }
+
+                switch (key)
+                {
+                    case " ":
+                        Sound.PlaySpace();
+                        break;
+                    case "~":
+                        Sound.PlayCarriageReturn();
+                        break;
+                    default:
+                        Sound.PlayKeystroke();
+                        break;
+                }
+
+                Sleep(ReduceIfIsMonitoring(milliseconds));
+            }
+
+            sb.Clear();
         }
 
         private void ProcessCommand(string escapedInput, StringBuilder sb, ref int i)
@@ -213,35 +218,45 @@ namespace GhostWriter
             }
             else if (_pauseRegex.IsMatch(escapedInput, i))
             {
-                var match = _pauseRegex.Match(escapedInput, i);
-                var seconds = double.Parse(match.Groups[2].Value);
-
-                if (DelayStrategy != DelayStrategy.Unchecked)
-                {
-                    Sleep((int)(1000 * seconds));
-                }
-
-                i = match.Index + match.Length - 1;
-                sb.Clear();
-                _fast = false;
+                ExecutePauseCommand(escapedInput, sb, ref i);
             }
             else if (escapedInput.Substring(i).StartsWith("[Wait]"))
             {
-                _setFocusOnMainForm();
-
-                var dialog = new WaitDialog();
-                dialog.ShowDialog();
-
-                i = i + "Wait".Length + 1;
-                sb.Clear();
-                _fast = false;
-
-                _setFocusOnTargetApplication();
+                ExecuteWaitCommand(sb, ref i);
             }
             else
             {
                 Debug.Fail("Unknown key sequence starting with '['.");
             }
+        }
+
+        private void ExecuteWaitCommand(StringBuilder sb, ref int i)
+        {
+            _setFocusOnMainForm();
+
+            var dialog = new WaitDialog();
+            dialog.ShowDialog();
+
+            i = i + "Wait".Length + 1;
+            sb.Clear();
+            _fast = false;
+
+            _setFocusOnTargetApplication();
+        }
+
+        private void ExecutePauseCommand(string escapedInput, StringBuilder sb, ref int i)
+        {
+            var match = _pauseRegex.Match(escapedInput, i);
+            var seconds = double.Parse(match.Groups[2].Value);
+
+            if (DelayStrategy != DelayStrategy.Unchecked)
+            {
+                Sleep((int)(1000 * seconds));
+            }
+
+            i = match.Index + match.Length - 1;
+            sb.Clear();
+            _fast = false;
         }
 
         private static bool IsEnter(string s)
