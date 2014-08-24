@@ -948,5 +948,17 @@ namespace GhostWriter
         {
             _selectedTab = tabControl.TabPages[tabControl.SelectedIndex];
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(@"Icon
+    Url: http://www.veryicon.com/icon/ico/Holiday/Halloween%201/ghost.ico
+    License: http://www.veryicon.com/icon/Holiday/Halloween%201/license.txt
+    Author:Arrioch (Milos Mirkovic)
+    License: CC Attribution-Noncommercial-No Derivate 3.0
+    Web:http://arrioch.deviantart.com/
+    LicenseUrl:http://creativecommons.org/licenses/by-nc-nd/3.0/
+    LicenseName:CC Attribution-Noncommercial-No Derivate 3.0", "About");
+        }
     }
 }
