@@ -35,8 +35,15 @@ namespace GhostWriter
         private volatile bool _running;
 
         public MainForm()
+            : this(null)
+        {
+        }
+
+        public MainForm(string filePath)
         {
             InitializeComponent();
+
+            _currentDemoFileName = filePath;
 
             _ghostKeyboard  = new GhostKeyboard(
                 () => SetForegroundWindow(Handle),
@@ -64,7 +71,14 @@ namespace GhostWriter
 
             LoadAppData();
 
-            CreateNew();
+            if (_currentDemoFileName == null)
+            {
+                CreateNew();
+            }
+            else
+            {
+                LoadDemo(_currentDemoFileName);
+            }
         }
 
         private void NewToolStripMenuItemClick(object sender, EventArgs e)
@@ -110,23 +124,14 @@ namespace GhostWriter
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
-                _currentDemoFileName = dialog.FileName;
-                InitializeDemo();
-
-                if (openRecentToolStripMenuItem.DropDownItems.Cast<ToolStripItem>().All(x => x.Text != _currentDemoFileName))
-                {
-                    var recentFileToolStripMenuItem = new ToolStripMenuItem(_currentDemoFileName);
-                    recentFileToolStripMenuItem.Click += recentFileToolStripMenuItem_Click;
-                    openRecentToolStripMenuItem.DropDownItems.Insert(0, recentFileToolStripMenuItem);
-                    openRecentToolStripMenuItem.Visible = true;
-
-                    SaveAppData();
-                }
+                LoadDemo(dialog.FileName);
             }
         }
 
-        private void InitializeDemo()
+        private void LoadDemo(string fileName)
         {
+            _currentDemoFileName = fileName;
+
             Text = Path.GetFileNameWithoutExtension(_currentDemoFileName) + " - Ghost Writer";
             reloadDemoToolStripMenuItem.Visible = true;
 
@@ -143,6 +148,16 @@ namespace GhostWriter
                     _ghostKeyboard.TypeRaw("^(a){DEL}" + GhostKeyboard.EscapeInput(_demo.InitialCode ?? ""));
                     SetForegroundWindow(Handle);
                 }
+            }
+
+            if (openRecentToolStripMenuItem.DropDownItems.Cast<ToolStripItem>().All(x => x.Text != _currentDemoFileName))
+            {
+                var recentFileToolStripMenuItem = new ToolStripMenuItem(_currentDemoFileName);
+                recentFileToolStripMenuItem.Click += recentFileToolStripMenuItem_Click;
+                openRecentToolStripMenuItem.DropDownItems.Insert(0, recentFileToolStripMenuItem);
+                openRecentToolStripMenuItem.Visible = true;
+
+                SaveAppData();
             }
         }
 
@@ -839,8 +854,7 @@ namespace GhostWriter
 
         private void recentFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _currentDemoFileName = ((ToolStripMenuItem)sender).Text;
-            InitializeDemo();
+            LoadDemo(((ToolStripMenuItem)sender).Text);
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
