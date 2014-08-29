@@ -16,7 +16,7 @@ namespace GhostWriter
         private static readonly Regex _escapeRegex = new Regex(_escapeRegexPattern);
         private static readonly Regex _unescapeRegex = new Regex(@"\{(" + _escapeRegexPattern + @")\}");
         private static readonly Regex _unescapeNewlineRegex = new Regex(@"(?<!\{)~(?!\})");
-        private static readonly Regex _pauseRegex = new Regex(@"\[(Pause (\d+(?:\.\d+)|\.\d+))\]");
+        private static readonly Regex _pauseRegex = new Regex(@"\[(Pause ((?:\d+(?:\.\d+)?)|\.\d+))\]");
 
         private readonly Random _random = new Random();
 
@@ -36,6 +36,8 @@ namespace GhostWriter
         private volatile bool _abort;
         private volatile bool _fast;
         private volatile bool _isTyping;
+
+        private readonly object _breakDialogLocker = new object();
 
         private static readonly IEnumerable<KeyValuePair<string, MatchEvaluator>> _commands = new Dictionary<string, MatchEvaluator>
         {
@@ -133,6 +135,7 @@ namespace GhostWriter
             {
                 if (_abort)
                 {
+                    _isTyping = false;
                     return;
                 }
 
@@ -163,6 +166,12 @@ namespace GhostWriter
         {
             var key = sb.ToString();
 
+            if (_abort)
+            {
+                _isTyping = false;
+                return;
+            }
+
             SendKeys.SendWait(key);
 
             if (!_fast)
@@ -183,6 +192,12 @@ namespace GhostWriter
                 else
                 {
                     milliseconds = 0;
+                }
+
+                if (_abort)
+                {
+                    _isTyping = false;
+                    return;
                 }
 
                 switch (key)
@@ -285,7 +300,7 @@ namespace GhostWriter
         private static string InsertCommands(string input)
         {
             var output = _commands.Aggregate(input, (current, command) => Regex.Replace(current, @"{\[}" + command.Key + @"{\]}", command.Value));
-            return Regex.Replace(output, @"{\[}(Pause \d+|Wait){\]}", match => "[" + match.Groups[1] + "]");
+            return Regex.Replace(output, @"{\[}(Pause (?:(?:\d+(?:\.\d+)?)|\.\d+)|Wait){\]}", match => "[" + match.Groups[1] + "]");
         }
 
         private static void AddEscapedCharacters(string escapedInput, char c, StringBuilder sb, ref int i)
@@ -635,33 +650,38 @@ namespace GhostWriter
             {
                 if (_isTyping)
                 {
-                    if (vkCode == (Keys.MButton | Keys.Space | Keys.F17))
+                    if (!BreakDialog.Instance.Visible)
                     {
-                        _setFocusOnMainForm();
-
-                        var dialog = new BreakDialog();
-                        dialog.ShowDialog();
-
-                        switch (dialog.BreakDialogResult)
+                        lock (_breakDialogLocker)
                         {
-                            case BreakDialogResult.GoFast:
-                                _fast = true;
-                                break;
-                            case BreakDialogResult.Abort:
-                                _abort = true;
-                                break;
-                            case BreakDialogResult.GoToPresentationTab:
-                                _setActiveTabIndex(0);
-                                break;
-                            case BreakDialogResult.GoToAutoTypingTab:
-                                _setActiveTabIndex(1);
-                                break;
-                            case BreakDialogResult.GoToAppMonitorTab:
-                                _setActiveTabIndex(2);
-                                break;
-                        }
+                            if (!BreakDialog.Instance.Visible)
+                            {
+                                _setFocusOnMainForm();
 
-                        _setFocusOnTargetApplication();
+                                BreakDialog.Instance.ShowDialog();
+
+                                switch (BreakDialog.Instance.BreakDialogResult)
+                                {
+                                    case BreakDialogResult.GoFast:
+                                        _fast = true;
+                                        break;
+                                    case BreakDialogResult.Abort:
+                                        _abort = true;
+                                        break;
+                                    case BreakDialogResult.GoToPresentationTab:
+                                        _setActiveTabIndex(0);
+                                        break;
+                                    case BreakDialogResult.GoToAutoTypingTab:
+                                        _setActiveTabIndex(1);
+                                        break;
+                                    case BreakDialogResult.GoToAppMonitorTab:
+                                        _setActiveTabIndex(2);
+                                        break;
+                                }
+
+                                _setFocusOnTargetApplication();
+                            }
+                        }
                     }
                 }
                 else

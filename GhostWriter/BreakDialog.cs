@@ -5,9 +5,16 @@ namespace GhostWriter
 {
     public partial class BreakDialog : Form
     {
-        public BreakDialog()
+        private static readonly BreakDialog _instance = new BreakDialog();
+
+        private BreakDialog()
         {
             InitializeComponent();
+        }
+
+        public static BreakDialog Instance
+        {
+            get { return _instance; }
         }
 
         public BreakDialogResult BreakDialogResult { get; private set; }
