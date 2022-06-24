@@ -306,7 +306,8 @@ namespace GhostWriter
                     }
 
                     SetForegroundWindow(window);
-                    if (MessageBox.Show("Is this the correct window?", "Select Target Application", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    var owner = new Window(window);
+                    if (MessageBox.Show(owner, "Is this the correct window?", "Select Target Application", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         _targetApplication = window;
                         break;
@@ -973,6 +974,13 @@ namespace GhostWriter
     Web:http://arrioch.deviantart.com/
     LicenseUrl:http://creativecommons.org/licenses/by-nc-nd/3.0/
     LicenseName:CC Attribution-Noncommercial-No Derivate 3.0", "About");
+        }
+
+        private class Window : IWin32Window
+        {
+            public Window(IntPtr handle) => Handle = handle;
+
+            public IntPtr Handle { get; }
         }
     }
 }
