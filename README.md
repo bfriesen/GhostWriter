@@ -5,7 +5,7 @@ Ghost Writer
 
 This is a Windows Forms application that allows you to live-code during a presentation without actually having to type. It does so by scripting the keystrokes of your live-coding and sending them to your editor.
 
-## Demo Creation Tutorial
+## Tutorial
 
 This tutorial creates a demo for a presentation about the origin of "Hello world" in computing. Live coding is done in Visual Studio. A demo consists of some number of "steps", which are roughly analogous to "slides" in PowerPoint. Each step consists of several parts:
 
@@ -16,6 +16,10 @@ This tutorial creates a demo for a presentation about the origin of "Hello world
     - This is the contingency plan if the auto-typing gets messed up - you can push either of these directly to the app at any time.
 - Keyboard Data
     - Defines the actual keystrokes that are sent to the target app.
+
+---
+
+Create a new console app in Visual Studio named "GhostWriterDemo". Leave Visual Studio open - Ghost Writer will send keystrokes to it.
 
 ---
 
@@ -146,7 +150,6 @@ Execute the step. Copy the code from Visual Studio and paste it into the `Finish
 
 Save the presentation. This concludes the tutorial for creating a demo.
 
-## Presenting a demo
+## Presentation Mode
 
 Ghost Writer is designed to work with Logitech presentation remotes. To enter presentation mode, ensure the menu item `Options > Presentation Mode` is checked. When in presentation mode, the right arrow goes the next step, left goes to the previous step, and the play button executes the current step.
-
