@@ -62,6 +62,8 @@ namespace GhostWriter
             this.setInitialCodeOnLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.presentationModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.monitorApplicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExecute = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.btnPrevious = new System.Windows.Forms.Button();
@@ -91,8 +93,6 @@ namespace GhostWriter
             this.tabAppMonitor = new System.Windows.Forms.TabPage();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             openDemoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,7 +122,8 @@ namespace GhostWriter
             this.helpToolStripMenuItem});
             menuStrip.Location = new System.Drawing.Point(0, 0);
             menuStrip.Name = "menuStrip";
-            menuStrip.Size = new System.Drawing.Size(900, 24);
+            menuStrip.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            menuStrip.Size = new System.Drawing.Size(1050, 24);
             menuStrip.TabIndex = 0;
             // 
             // fileToolStripMenuItem
@@ -311,13 +312,29 @@ namespace GhostWriter
             this.monitorApplicationToolStripMenuItem.Text = "Monitor Application";
             this.monitorApplicationToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OptionToolStripMenuItem_CheckedChanged);
             // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
             // btnExecute
             // 
             this.btnExecute.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnExecute.Enabled = false;
-            this.btnExecute.Location = new System.Drawing.Point(413, 585);
+            this.btnExecute.Location = new System.Drawing.Point(482, 675);
+            this.btnExecute.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnExecute.Name = "btnExecute";
-            this.btnExecute.Size = new System.Drawing.Size(75, 23);
+            this.btnExecute.Size = new System.Drawing.Size(88, 27);
             this.btnExecute.TabIndex = 2;
             this.btnExecute.Text = "Execute";
             this.btnExecute.UseVisualStyleBackColor = true;
@@ -327,9 +344,10 @@ namespace GhostWriter
             // 
             this.btnNext.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnNext.Enabled = false;
-            this.btnNext.Location = new System.Drawing.Point(494, 585);
+            this.btnNext.Location = new System.Drawing.Point(576, 675);
+            this.btnNext.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(75, 23);
+            this.btnNext.Size = new System.Drawing.Size(88, 27);
             this.btnNext.TabIndex = 3;
             this.btnNext.Text = "Next";
             this.btnNext.UseVisualStyleBackColor = true;
@@ -339,9 +357,10 @@ namespace GhostWriter
             // 
             this.btnPrevious.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnPrevious.Enabled = false;
-            this.btnPrevious.Location = new System.Drawing.Point(332, 585);
+            this.btnPrevious.Location = new System.Drawing.Point(387, 675);
+            this.btnPrevious.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnPrevious.Name = "btnPrevious";
-            this.btnPrevious.Size = new System.Drawing.Size(75, 23);
+            this.btnPrevious.Size = new System.Drawing.Size(88, 27);
             this.btnPrevious.TabIndex = 1;
             this.btnPrevious.Text = "Previous";
             this.btnPrevious.UseVisualStyleBackColor = true;
@@ -373,9 +392,10 @@ namespace GhostWriter
             // 
             this.btnLast.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnLast.Enabled = false;
-            this.btnLast.Location = new System.Drawing.Point(575, 585);
+            this.btnLast.Location = new System.Drawing.Point(671, 675);
+            this.btnLast.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnLast.Name = "btnLast";
-            this.btnLast.Size = new System.Drawing.Size(75, 23);
+            this.btnLast.Size = new System.Drawing.Size(88, 27);
             this.btnLast.TabIndex = 5;
             this.btnLast.Text = "Last";
             this.btnLast.UseVisualStyleBackColor = true;
@@ -385,9 +405,10 @@ namespace GhostWriter
             // 
             this.btnFirst.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnFirst.Enabled = false;
-            this.btnFirst.Location = new System.Drawing.Point(251, 585);
+            this.btnFirst.Location = new System.Drawing.Point(293, 675);
+            this.btnFirst.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnFirst.Name = "btnFirst";
-            this.btnFirst.Size = new System.Drawing.Size(75, 23);
+            this.btnFirst.Size = new System.Drawing.Size(88, 27);
             this.btnFirst.TabIndex = 6;
             this.btnFirst.Text = "First";
             this.btnFirst.UseVisualStyleBackColor = true;
@@ -401,10 +422,11 @@ namespace GhostWriter
             this.tabControl.Controls.Add(this.tabPresentation);
             this.tabControl.Controls.Add(this.tabAutoTyping);
             this.tabControl.Controls.Add(this.tabAppMonitor);
-            this.tabControl.Location = new System.Drawing.Point(0, 27);
+            this.tabControl.Location = new System.Drawing.Point(0, 31);
+            this.tabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(900, 552);
+            this.tabControl.Size = new System.Drawing.Size(1050, 637);
             this.tabControl.TabIndex = 7;
             this.toolTip.SetToolTip(this.tabControl, "Presentation Notes");
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
@@ -414,10 +436,11 @@ namespace GhostWriter
             // 
             this.tabPresentation.Controls.Add(this.lblStepNumberA);
             this.tabPresentation.Controls.Add(this.splitContainer);
-            this.tabPresentation.Location = new System.Drawing.Point(4, 22);
+            this.tabPresentation.Location = new System.Drawing.Point(4, 24);
+            this.tabPresentation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPresentation.Name = "tabPresentation";
-            this.tabPresentation.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPresentation.Size = new System.Drawing.Size(892, 526);
+            this.tabPresentation.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPresentation.Size = new System.Drawing.Size(1042, 609);
             this.tabPresentation.TabIndex = 0;
             this.tabPresentation.Text = "Presentation";
             this.tabPresentation.UseVisualStyleBackColor = true;
@@ -426,10 +449,11 @@ namespace GhostWriter
             // 
             this.lblStepNumberA.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblStepNumberA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStepNumberA.Location = new System.Drawing.Point(3, 3);
+            this.lblStepNumberA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblStepNumberA.Location = new System.Drawing.Point(4, 3);
+            this.lblStepNumberA.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStepNumberA.Name = "lblStepNumberA";
-            this.lblStepNumberA.Size = new System.Drawing.Size(886, 20);
+            this.lblStepNumberA.Size = new System.Drawing.Size(1034, 23);
             this.lblStepNumberA.TabIndex = 1;
             // 
             // splitContainer
@@ -437,7 +461,8 @@ namespace GhostWriter
             this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer.Location = new System.Drawing.Point(-4, 26);
+            this.splitContainer.Location = new System.Drawing.Point(-5, 30);
+            this.splitContainer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer.Name = "splitContainer";
             this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -452,18 +477,20 @@ namespace GhostWriter
             this.splitContainer.Panel2.Controls.Add(this.rbFinishedCode);
             this.splitContainer.Panel2.Controls.Add(this.rbStartingCode);
             this.splitContainer.Panel2.Controls.Add(this.txtExpectedCode);
-            this.splitContainer.Size = new System.Drawing.Size(900, 504);
-            this.splitContainer.SplitterDistance = 252;
+            this.splitContainer.Size = new System.Drawing.Size(1050, 582);
+            this.splitContainer.SplitterDistance = 291;
+            this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 5;
             // 
             // lblNotes
             // 
             this.lblNotes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotes.Location = new System.Drawing.Point(10, 3);
+            this.lblNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblNotes.Location = new System.Drawing.Point(12, 3);
+            this.lblNotes.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblNotes.Name = "lblNotes";
-            this.lblNotes.Size = new System.Drawing.Size(889, 20);
+            this.lblNotes.Size = new System.Drawing.Size(1037, 23);
             this.lblNotes.TabIndex = 6;
             this.lblNotes.Text = "Notes";
             // 
@@ -473,10 +500,11 @@ namespace GhostWriter
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNotes.ContextMenuStrip = this.highlightingContextMenuStrip;
-            this.txtNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtNotes.Location = new System.Drawing.Point(5, 26);
+            this.txtNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtNotes.Location = new System.Drawing.Point(6, 30);
+            this.txtNotes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtNotes.Name = "txtNotes";
-            this.txtNotes.Size = new System.Drawing.Size(891, 224);
+            this.txtNotes.Size = new System.Drawing.Size(1039, 258);
             this.txtNotes.TabIndex = 0;
             this.txtNotes.Text = "";
             this.toolTip.SetToolTip(this.txtNotes, "Presentation Notes");
@@ -485,9 +513,10 @@ namespace GhostWriter
             // 
             // btnPushToApplication
             // 
-            this.btnPushToApplication.Location = new System.Drawing.Point(262, 0);
+            this.btnPushToApplication.Location = new System.Drawing.Point(306, 0);
+            this.btnPushToApplication.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnPushToApplication.Name = "btnPushToApplication";
-            this.btnPushToApplication.Size = new System.Drawing.Size(106, 23);
+            this.btnPushToApplication.Size = new System.Drawing.Size(124, 27);
             this.btnPushToApplication.TabIndex = 8;
             this.btnPushToApplication.Text = "Push to Application";
             this.btnPushToApplication.UseVisualStyleBackColor = true;
@@ -495,10 +524,11 @@ namespace GhostWriter
             // 
             // rbFinishedCode
             // 
-            this.rbFinishedCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rbFinishedCode.Location = new System.Drawing.Point(135, 0);
+            this.rbFinishedCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.rbFinishedCode.Location = new System.Drawing.Point(158, 0);
+            this.rbFinishedCode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rbFinishedCode.Name = "rbFinishedCode";
-            this.rbFinishedCode.Size = new System.Drawing.Size(121, 23);
+            this.rbFinishedCode.Size = new System.Drawing.Size(141, 27);
             this.rbFinishedCode.TabIndex = 2;
             this.rbFinishedCode.Text = "Finished Code";
             this.rbFinishedCode.UseVisualStyleBackColor = true;
@@ -506,10 +536,11 @@ namespace GhostWriter
             // rbStartingCode
             // 
             this.rbStartingCode.Checked = true;
-            this.rbStartingCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rbStartingCode.Location = new System.Drawing.Point(13, 0);
+            this.rbStartingCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.rbStartingCode.Location = new System.Drawing.Point(15, 0);
+            this.rbStartingCode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rbStartingCode.Name = "rbStartingCode";
-            this.rbStartingCode.Size = new System.Drawing.Size(116, 23);
+            this.rbStartingCode.Size = new System.Drawing.Size(135, 27);
             this.rbStartingCode.TabIndex = 1;
             this.rbStartingCode.TabStop = true;
             this.rbStartingCode.Text = "Starting Code";
@@ -522,10 +553,11 @@ namespace GhostWriter
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtExpectedCode.ContextMenuStrip = this.highlightingContextMenuStrip;
-            this.txtExpectedCode.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtExpectedCode.Location = new System.Drawing.Point(5, 29);
+            this.txtExpectedCode.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtExpectedCode.Location = new System.Drawing.Point(6, 33);
+            this.txtExpectedCode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtExpectedCode.Name = "txtExpectedCode";
-            this.txtExpectedCode.Size = new System.Drawing.Size(891, 215);
+            this.txtExpectedCode.Size = new System.Drawing.Size(1039, 247);
             this.txtExpectedCode.TabIndex = 0;
             this.txtExpectedCode.Text = "";
             this.toolTip.SetToolTip(this.txtExpectedCode, "Code after this step has executed");
@@ -536,10 +568,11 @@ namespace GhostWriter
             // 
             this.tabAutoTyping.Controls.Add(this.splitContainer1);
             this.tabAutoTyping.Controls.Add(this.lblStepNumberB);
-            this.tabAutoTyping.Location = new System.Drawing.Point(4, 22);
+            this.tabAutoTyping.Location = new System.Drawing.Point(4, 24);
+            this.tabAutoTyping.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabAutoTyping.Name = "tabAutoTyping";
-            this.tabAutoTyping.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAutoTyping.Size = new System.Drawing.Size(892, 526);
+            this.tabAutoTyping.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabAutoTyping.Size = new System.Drawing.Size(1042, 609);
             this.tabAutoTyping.TabIndex = 1;
             this.tabAutoTyping.Text = "Auto-Typing";
             this.tabAutoTyping.UseVisualStyleBackColor = true;
@@ -549,7 +582,8 @@ namespace GhostWriter
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.Location = new System.Drawing.Point(-4, 26);
+            this.splitContainer1.Location = new System.Drawing.Point(-5, 30);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -562,8 +596,9 @@ namespace GhostWriter
             // 
             this.splitContainer1.Panel2.Controls.Add(this.lblKeyboardData);
             this.splitContainer1.Panel2.Controls.Add(this.txtGhostKeyboardData);
-            this.splitContainer1.Size = new System.Drawing.Size(900, 504);
-            this.splitContainer1.SplitterDistance = 252;
+            this.splitContainer1.Size = new System.Drawing.Size(1050, 582);
+            this.splitContainer1.SplitterDistance = 291;
+            this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 6;
             // 
             // txtNotes2
@@ -572,10 +607,11 @@ namespace GhostWriter
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNotes2.ContextMenuStrip = this.highlightingContextMenuStrip;
-            this.txtNotes2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtNotes2.Location = new System.Drawing.Point(5, 26);
+            this.txtNotes2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtNotes2.Location = new System.Drawing.Point(6, 30);
+            this.txtNotes2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtNotes2.Name = "txtNotes2";
-            this.txtNotes2.Size = new System.Drawing.Size(891, 224);
+            this.txtNotes2.Size = new System.Drawing.Size(1039, 258);
             this.txtNotes2.TabIndex = 8;
             this.txtNotes2.Text = "";
             this.toolTip.SetToolTip(this.txtNotes2, "Presentation Notes");
@@ -585,10 +621,11 @@ namespace GhostWriter
             // 
             this.lblNotes2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblNotes2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotes2.Location = new System.Drawing.Point(10, 3);
+            this.lblNotes2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblNotes2.Location = new System.Drawing.Point(12, 3);
+            this.lblNotes2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblNotes2.Name = "lblNotes2";
-            this.lblNotes2.Size = new System.Drawing.Size(887, 20);
+            this.lblNotes2.Size = new System.Drawing.Size(1035, 23);
             this.lblNotes2.TabIndex = 7;
             this.lblNotes2.Text = "Notes";
             // 
@@ -596,10 +633,11 @@ namespace GhostWriter
             // 
             this.lblKeyboardData.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblKeyboardData.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblKeyboardData.Location = new System.Drawing.Point(13, 3);
+            this.lblKeyboardData.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblKeyboardData.Location = new System.Drawing.Point(15, 3);
+            this.lblKeyboardData.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblKeyboardData.Name = "lblKeyboardData";
-            this.lblKeyboardData.Size = new System.Drawing.Size(880, 20);
+            this.lblKeyboardData.Size = new System.Drawing.Size(1027, 23);
             this.lblKeyboardData.TabIndex = 8;
             this.lblKeyboardData.Text = "Keyboard Data";
             // 
@@ -609,10 +647,11 @@ namespace GhostWriter
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtGhostKeyboardData.ContextMenuStrip = this.commandContextMenuStrip;
-            this.txtGhostKeyboardData.Font = new System.Drawing.Font("Consolas", 12F);
-            this.txtGhostKeyboardData.Location = new System.Drawing.Point(5, 29);
+            this.txtGhostKeyboardData.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtGhostKeyboardData.Location = new System.Drawing.Point(6, 33);
+            this.txtGhostKeyboardData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtGhostKeyboardData.Name = "txtGhostKeyboardData";
-            this.txtGhostKeyboardData.Size = new System.Drawing.Size(891, 215);
+            this.txtGhostKeyboardData.Size = new System.Drawing.Size(1039, 247);
             this.txtGhostKeyboardData.TabIndex = 2;
             this.txtGhostKeyboardData.Text = "";
             this.toolTip.SetToolTip(this.txtGhostKeyboardData, "Ghost Keyboard Data");
@@ -627,19 +666,21 @@ namespace GhostWriter
             // 
             this.lblStepNumberB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblStepNumberB.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStepNumberB.Location = new System.Drawing.Point(3, 3);
+            this.lblStepNumberB.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblStepNumberB.Location = new System.Drawing.Point(4, 3);
+            this.lblStepNumberB.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStepNumberB.Name = "lblStepNumberB";
-            this.lblStepNumberB.Size = new System.Drawing.Size(886, 20);
+            this.lblStepNumberB.Size = new System.Drawing.Size(1034, 23);
             this.lblStepNumberB.TabIndex = 2;
             // 
             // tabAppMonitor
             // 
             this.tabAppMonitor.Controls.Add(this.pictureBox);
-            this.tabAppMonitor.Location = new System.Drawing.Point(4, 22);
+            this.tabAppMonitor.Location = new System.Drawing.Point(4, 24);
+            this.tabAppMonitor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabAppMonitor.Name = "tabAppMonitor";
-            this.tabAppMonitor.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAppMonitor.Size = new System.Drawing.Size(892, 526);
+            this.tabAppMonitor.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabAppMonitor.Size = new System.Drawing.Size(1042, 609);
             this.tabAppMonitor.TabIndex = 2;
             this.tabAppMonitor.Text = "App Monitor";
             this.tabAppMonitor.UseVisualStyleBackColor = true;
@@ -647,33 +688,19 @@ namespace GhostWriter
             // pictureBox
             // 
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox.Location = new System.Drawing.Point(4, 3);
+            this.pictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(886, 520);
+            this.pictureBox.Size = new System.Drawing.Size(1034, 603);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 620);
+            this.ClientSize = new System.Drawing.Size(1050, 715);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.btnFirst);
             this.Controls.Add(this.btnLast);
@@ -684,6 +711,7 @@ namespace GhostWriter
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = menuStrip;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "Ghost Writer";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
