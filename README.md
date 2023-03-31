@@ -137,7 +137,7 @@ Without further ado, I present "Hello world" in C#!
 In the `Keyboard Data` textbox, enter the following:
 
 ```
-
+[GotoLine 5]
 Console.WriteLine("Hello, world!");
 
 ```

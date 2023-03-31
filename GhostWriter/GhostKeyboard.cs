@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Windows.Forms;
 
 namespace GhostWriter
 {
     public sealed class GhostKeyboard : IDisposable
     {
         private const string _escapeRegexPattern = @"[+\^%~(){}]|\[(?!`)|(?<!`)\]";
-        private static readonly Regex _escapeRegex = new Regex(_escapeRegexPattern);
+        private static readonly Regex _escapeRegex = new Regex(@"{(.+?)}|" + _escapeRegexPattern);
         private static readonly Regex _unescapeRegex = new Regex(@"\{(" + _escapeRegexPattern + @")\}");
         private static readonly Regex _unescapeNewlineRegex = new Regex(@"(?<!\{)~(?!\})");
         private static readonly Regex _pauseRegex = new Regex(@"\[(Pause ((?:\d+(?:\.\d+)?)|\.\d+))\]");
@@ -32,49 +27,58 @@ namespace GhostWriter
         private readonly Action _setFocusOnTargetApplication;
         private readonly Action<int> _setActiveTabIndex;
         private readonly Action _swapForegroundWindows;
-
+        private readonly Action _showWaitDialog;
         private volatile bool _abort;
         private volatile bool _fast;
         private volatile bool _isTyping;
 
         private readonly object _breakDialogLocker = new object();
 
-        private static readonly IEnumerable<KeyValuePair<string, MatchEvaluator>> _commands = new Dictionary<string, MatchEvaluator>
+        private static readonly IEnumerable<(string Pattern, MatchEvaluator MatchEvaluator, string ToolTipText)> _commands = new (string, MatchEvaluator, string)[]
         {
-            { @"GotoLine (\d+)", GotoLine },
-            { @"End", End },
-            { @"Backspace (\d+)", Backspace },
-            { @"Tab (\d+)", Tab },
-            { @"Up", Up },
-            { @"Down", Down },
-            { @"Left", Left },
-            { @"Right", Right },
-            { @"Up (\d+)", UpMultiple },
-            { @"Down (\d+)", DownMultiple },
-            { @"Left (\d+)", LeftMultiple },
-            { @"Right (\d+)", RightMultiple },
-            { @"SelectText (\d+),(\d+) (-?\d+),(-?\d+)", SelectText },
-            { @"Delete (\d+)", Delete },
-            { @"SelectTextFromHere (-?\d+),(-?\d+)", SelectTextFromHere },
-            { @"DeleteLine", DeleteLine },
-            { @"DeleteAll", DeleteAll },
-            { @"Fast", Fast },
-            { @"/Fast", Fast },
-            { @"CommentLines", CommentLines },
-            { @"UncommentLines", UncommentLines },
-            { @"ToggleCollapse", ToggleCollapse },
+            ( @"GotoLine (\d+)", GotoLine, "Go to line # by pressing <Ctrl> + G and entering the line number." ),
+            ( @"GotoAll (.+?)", GotoAll, "Go to ? by pressing <Ctrl> + T and entering the value." ),
+            ( @"AddClass (.+?)", AddClass, "Add class ? by pressing <Alt> + <Shift> + C and entering the value." ),
+            ( @"Home", Home, "Press the <End> key." ),
+            ( @"End", End, "Press the <End> key." ),
+            ( @"Backspace", Backspace, "Press the <Backspace> key." ),
+            ( @"Delete", Delete, "Press the <Delete> key." ),
+            ( @"Backspace (\d+)", BackspaceMultiple, "Press the <Backspace> key # times." ),
+            ( @"Delete (\d+)", DeleteMultiple, "Press the <Delete> key # times." ),
+            ( @"Tab (\d+)", Tab, "Press the <Tab> key." ),
+            ( @"Up", Up, "Press the Up Arrow key." ),
+            ( @"Down", Down, "Press the Down Arrow key." ),
+            ( @"Left", Left, "Press the Left Arrow key." ),
+            ( @"Right", Right, "Press the Right Arrow key." ),
+            ( @"Up (\d+)", UpMultiple, "Press the Up Arrow key # times." ),
+            ( @"Down (\d+)", DownMultiple, "Press the Down Arrow key # times." ),
+            ( @"Left (\d+)", LeftMultiple, "Press the Left Arrow key # times." ),
+            ( @"Right (\d+)", RightMultiple, "Press the Right Arrow key # times." ),
+            ( @"SelectText (\d+),(\d+) (-?\d+),(-?\d+)", SelectText,
+                "Select text \"#,# #,#\" as \"lineNumber,columnNumber lineCount,columnCount\". Negative values for lineCount and columnCount indicate backwards selection."),
+            ( @"SelectTextFromHere (-?\d+),(-?\d+)", SelectTextFromHere,
+                "Select text \"#,#\" as \"lineCount,columnCount\". Negative values for lineCount and columnCount indicate backwards selection." ),
+            ( @"DeleteLine", DeleteLine, "Delete the current line by pressing <Ctrl> + <Shift> + L." ),
+            ( @"DeleteAll", DeleteAll, "Delete all text in the current file by pressing <Ctrl> + A then <Delete>." ),
+            ( @"Fast", Fast, "Begins a fast-typing section." ),
+            ( @"/Fast", Fast, "Ends a fast-typing section." ),
+            ( @"CommentLines", CommentLines, "Comments the selected lines by pressing <Ctrl> K then <Ctrl> C." ),
+            ( @"UncommentLines", UncommentLines, "Uncomments the selected lines by pressing <Ctrl> K then <Ctrl> U." ),
+            ( @"ToggleCollapse", ToggleCollapse, "Toggle document collapse by pressing <Ctrl> + M then <Ctrl> + M again." ),
         };
 
         public GhostKeyboard(
             Action setFocusOnMainForm,
             Action setFocusOnTargetApplication,
             Action<int> setActiveTabIndex,
-            Action swapForegroundWindows)
+            Action swapForegroundWindows,
+            Action showWaitDialog)
         {
             _setFocusOnMainForm = setFocusOnMainForm;
             _setFocusOnTargetApplication = setFocusOnTargetApplication;
             _setActiveTabIndex = setActiveTabIndex;
             _swapForegroundWindows = swapForegroundWindows;
+            _showWaitDialog = showWaitDialog;
 
             _proc = HookCallback;
             _hookID = SetHook(_proc);
@@ -85,9 +89,35 @@ namespace GhostWriter
             Dispose(false);
         }
 
-        public static IEnumerable<string> Commands
+        public static IEnumerable<ToolStripItem> Commands
         {
-            get { return new[] { "[Pause #]", "[Wait]" }.Concat(_commands.Select(kvp => kvp.Key).Select(commandRegex => "[" + commandRegex.Replace("(", "").Replace(")", "").Replace(@"-?\d+", "#").Replace(@"\d+", "#") + "]")); }
+            get
+            {
+                return new ToolStripItem[]
+                {
+                    new ToolStripLabel
+                    {
+                        Text = "[Pause #]",
+                        ToolTipText = "Pause typing for # milliseconds.",
+                    },
+                    new ToolStripLabel
+                    {
+                        Text = "[Wait]",
+                        ToolTipText = "Pause typing until you click 'OK' on the wait dialog.",
+                    },
+                }.Concat(_commands.Select(command =>
+                    new ToolStripLabel
+                    {
+                        Text = "[" + command.Pattern
+                            .Replace("(", "")
+                            .Replace(")", "")
+                            .Replace(@"-?\d+", "#")
+                            .Replace(@"\d+", "#")
+                            .Replace(".+?", "?")
+                            + "]",
+                        ToolTipText = command.ToolTipText,
+                    }));
+            }
         }
 
         public DelayStrategy DelayStrategy { get; set; }
@@ -112,8 +142,13 @@ namespace GhostWriter
             UnhookWindowsHookEx(_hookID);
         }
 
-        public void TypeRaw(string input)
+        public void TypeRaw(string input, string? fileName = null)
         {
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                SendKeys.SendWait($"^(t){fileName}~");
+            }
+
             SendKeys.SendWait(input);
         }
 
@@ -122,11 +157,21 @@ namespace GhostWriter
             _abort = true;
         }
 
-        public void Type(string rawInput)
+        public void Type(string rawInput, string fileName)
         {
             _abort = false;
             _fast = false;
             _isTyping = true;
+
+            SendKeys.SendWait("{ESC}"); // Cancel any dialogs or back out of any tool windows.
+
+            if (fileName is not null)
+            {
+                SendKeys.SendWait("^(t)");
+                Thread.Sleep(500);
+                SendKeys.SendWait(fileName + "~");
+                Thread.Sleep(500);
+            }
 
             var escapedInput = EscapeInput(rawInput ?? "");
 
@@ -147,7 +192,7 @@ namespace GhostWriter
                 }
                 else if (c == '+' || c == '^' || c == '%')
                 {
-                    AddCombo(escapedInput, sb, ref i);
+                    ProcessCombo(escapedInput, ref i);
                 }
                 else if (c == '[')
                 {
@@ -231,9 +276,9 @@ namespace GhostWriter
                 // When wrapped in [`text to paste`] indicates a paste command
                 ExecutePasteCommand(escapedInput, ref i);
             }
-            else if (_pauseRegex.IsMatch(escapedInput, i))
+            else if (_pauseRegex.Match(escapedInput, i) is Match { Success: true } match)
             {
-                ExecutePauseCommand(escapedInput, sb, ref i);
+                ExecutePauseCommand(sb, match, ref i);
             }
             else if (escapedInput.Substring(i).StartsWith("[Wait]"))
             {
@@ -248,9 +293,7 @@ namespace GhostWriter
         private void ExecuteWaitCommand(StringBuilder sb, ref int i)
         {
             _setFocusOnMainForm();
-
-            var dialog = new WaitDialog();
-            dialog.ShowDialog();
+            _showWaitDialog();
 
             i = i + "Wait".Length + 1;
             sb.Clear();
@@ -259,14 +302,12 @@ namespace GhostWriter
             _setFocusOnTargetApplication();
         }
 
-        private void ExecutePauseCommand(string escapedInput, StringBuilder sb, ref int i)
+        private void ExecutePauseCommand(StringBuilder sb, Match match, ref int i)
         {
-            var match = _pauseRegex.Match(escapedInput, i);
-            var seconds = double.Parse(match.Groups[2].Value);
-
             if (DelayStrategy != DelayStrategy.Unchecked)
             {
-                Sleep((int)(1000 * seconds));
+                var milliseconds = double.Parse(match.Groups[2].Value);
+                Sleep((int)(milliseconds));
             }
 
             i = match.Index + match.Length - 1;
@@ -291,7 +332,13 @@ namespace GhostWriter
 
         public static string EscapeInput(string rawInput)
         {
-            var escapedInput = _escapeRegex.Replace(rawInput, "{$0}");
+            var escapedInput = _escapeRegex.Replace(rawInput, match =>
+            {
+                if (match.Groups[1].Success)
+                    return match.Groups[1].Value; // Remove the { and } from literal values.
+
+                return "{" + match.Value + "}"; // Add { and } to values needing escaping.
+            });
             escapedInput = escapedInput.Replace("\r\n", "~").Replace("\n", "~");
             escapedInput = InsertCommands(escapedInput);
             return escapedInput;
@@ -299,7 +346,7 @@ namespace GhostWriter
 
         private static string InsertCommands(string input)
         {
-            var output = _commands.Aggregate(input, (current, command) => Regex.Replace(current, @"{\[}" + command.Key + @"{\]}", command.Value));
+            var output = _commands.Aggregate(input, (current, command) => Regex.Replace(current, @"{\[}" + command.Pattern + @"{\]}", command.MatchEvaluator));
             return Regex.Replace(output, @"{\[}(Pause (?:(?:\d+(?:\.\d+)?)|\.\d+)|Wait){\]}", match => "[" + match.Groups[1] + "]");
         }
 
@@ -321,34 +368,23 @@ namespace GhostWriter
             }
         }
 
-        private static void AddCombo(string escapedInput, StringBuilder sb, ref int i)
+        private static void ProcessCombo(string escapedInput, ref int i)
         {
-            for (i = i + 1; i < escapedInput.Length; i++)
+            var sb = new StringBuilder();
+            var c = escapedInput[i];
+            sb.Append(c);
+            c = escapedInput[++i];
+            sb.Append(c);
+            if (c == '(')
             {
-                var c = escapedInput[i];
-                sb.Append(c);
-                if (c == '{')
+                while (c != ')')
                 {
-                    if (escapedInput[i + 1] == '}')
-                    {
-                        sb.Append("}}");
-                        i += 2;
-                    }
-                    else
-                    {
-                        while (c != '}')
-                        {
-                            i++;
-                            c = escapedInput[i];
-                            sb.Append(c);
-                        }
-                    }
-                }
-                else if (c == ')')
-                {
-                    break;
+                    c = escapedInput[++i];
+                    sb.Append(c);
                 }
             }
+
+            SendKeys.SendWait(sb.ToString());
         }
 
         private static void AddAndExecuteFastCommand(string escapedInput, StringBuilder sb, ref int i)
@@ -408,9 +444,24 @@ namespace GhostWriter
             return "[]" + command + "[]";
         }
 
+        private static string GotoAll(Match match)
+        {
+            return $"[]^(t){match.Groups[1].Value}~[]";
+        }
+
         private static void GotoLine(StringBuilder sb, int line)
         {
             sb.Append("^({END})^(g)").Append(line).Append("~");
+        }
+
+        private static string AddClass(Match match)
+        {
+            return $"[]+%(c)[][Pause 200]{match.Groups[1].Value}~";
+        }
+
+        private static string Home(Match match)
+        {
+            return "[]{HOME}[]";
         }
 
         private static string End(Match match)
@@ -419,6 +470,11 @@ namespace GhostWriter
         }
 
         private static string Backspace(Match match)
+        {
+            return "{BS}";
+        }
+
+        private static string BackspaceMultiple(Match match)
         {
             var sb = new StringBuilder();
             var count = int.Parse(match.Groups[1].Value);
@@ -515,6 +571,11 @@ namespace GhostWriter
         }
 
         private static string Delete(Match match)
+        {
+            return "{DEL}";
+        }
+
+        private static string DeleteMultiple(Match match)
         {
             var sb = new StringBuilder();
             var count = int.Parse(match.Groups[1].Value);

@@ -74,6 +74,8 @@ namespace GhostWriter
             this.btnFirst = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPresentation = new System.Windows.Forms.TabPage();
+            this.txtFileName = new System.Windows.Forms.TextBox();
+            this.lblFileName = new System.Windows.Forms.Label();
             this.lblStepNumberA = new System.Windows.Forms.Label();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.lblNotes = new System.Windows.Forms.Label();
@@ -83,6 +85,8 @@ namespace GhostWriter
             this.rbStartingCode = new System.Windows.Forms.RadioButton();
             this.txtExpectedCode = new System.Windows.Forms.RichTextBox();
             this.tabAutoTyping = new System.Windows.Forms.TabPage();
+            this.txtFileNameB = new System.Windows.Forms.TextBox();
+            this.lblFileNameB = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txtNotes2 = new System.Windows.Forms.RichTextBox();
             this.lblNotes2 = new System.Windows.Forms.Label();
@@ -429,11 +433,13 @@ namespace GhostWriter
             this.tabControl.Size = new System.Drawing.Size(1050, 637);
             this.tabControl.TabIndex = 7;
             this.toolTip.SetToolTip(this.tabControl, "Presentation Notes");
-            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
-            this.tabControl.TabIndexChanged += new System.EventHandler(this.TabControl_TabIndexChanged);
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.TabControlSelectedIndexChanged);
+            this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControlSelected);
             // 
             // tabPresentation
             // 
+            this.tabPresentation.Controls.Add(this.txtFileName);
+            this.tabPresentation.Controls.Add(this.lblFileName);
             this.tabPresentation.Controls.Add(this.lblStepNumberA);
             this.tabPresentation.Controls.Add(this.splitContainer);
             this.tabPresentation.Location = new System.Drawing.Point(4, 24);
@@ -445,15 +451,33 @@ namespace GhostWriter
             this.tabPresentation.Text = "Presentation";
             this.tabPresentation.UseVisualStyleBackColor = true;
             // 
+            // txtFileName
+            // 
+            this.txtFileName.Location = new System.Drawing.Point(92, 4);
+            this.txtFileName.Name = "txtFileName";
+            this.txtFileName.Size = new System.Drawing.Size(190, 23);
+            this.txtFileName.TabIndex = 9;
+            this.txtFileName.TextChanged += new System.EventHandler(this.TxtFileNameTextChanged);
+            // 
+            // lblFileName
+            // 
+            this.lblFileName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblFileName.Location = new System.Drawing.Point(4, 3);
+            this.lblFileName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblFileName.Name = "lblFileName";
+            this.lblFileName.Size = new System.Drawing.Size(81, 23);
+            this.lblFileName.TabIndex = 8;
+            this.lblFileName.Text = "File Name";
+            // 
             // lblStepNumberA
             // 
             this.lblStepNumberA.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblStepNumberA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblStepNumberA.Location = new System.Drawing.Point(4, 3);
+            this.lblStepNumberA.Location = new System.Drawing.Point(289, 3);
             this.lblStepNumberA.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStepNumberA.Name = "lblStepNumberA";
-            this.lblStepNumberA.Size = new System.Drawing.Size(1034, 23);
+            this.lblStepNumberA.Size = new System.Drawing.Size(749, 23);
             this.lblStepNumberA.TabIndex = 1;
             // 
             // splitContainer
@@ -557,7 +581,7 @@ namespace GhostWriter
             this.txtExpectedCode.Location = new System.Drawing.Point(6, 33);
             this.txtExpectedCode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtExpectedCode.Name = "txtExpectedCode";
-            this.txtExpectedCode.Size = new System.Drawing.Size(1039, 247);
+            this.txtExpectedCode.Size = new System.Drawing.Size(1039, 243);
             this.txtExpectedCode.TabIndex = 0;
             this.txtExpectedCode.Text = "";
             this.toolTip.SetToolTip(this.txtExpectedCode, "Code after this step has executed");
@@ -566,6 +590,8 @@ namespace GhostWriter
             // 
             // tabAutoTyping
             // 
+            this.tabAutoTyping.Controls.Add(this.txtFileNameB);
+            this.tabAutoTyping.Controls.Add(this.lblFileNameB);
             this.tabAutoTyping.Controls.Add(this.splitContainer1);
             this.tabAutoTyping.Controls.Add(this.lblStepNumberB);
             this.tabAutoTyping.Location = new System.Drawing.Point(4, 24);
@@ -576,6 +602,24 @@ namespace GhostWriter
             this.tabAutoTyping.TabIndex = 1;
             this.tabAutoTyping.Text = "Auto-Typing";
             this.tabAutoTyping.UseVisualStyleBackColor = true;
+            // 
+            // txtFileNameB
+            // 
+            this.txtFileNameB.Location = new System.Drawing.Point(92, 4);
+            this.txtFileNameB.Name = "txtFileNameB";
+            this.txtFileNameB.Size = new System.Drawing.Size(190, 23);
+            this.txtFileNameB.TabIndex = 8;
+            this.txtFileNameB.TextChanged += new System.EventHandler(this.TxtFileNameTextChanged);
+            // 
+            // lblFileNameB
+            // 
+            this.lblFileNameB.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblFileNameB.Location = new System.Drawing.Point(4, 3);
+            this.lblFileNameB.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblFileNameB.Name = "lblFileNameB";
+            this.lblFileNameB.Size = new System.Drawing.Size(81, 23);
+            this.lblFileNameB.TabIndex = 7;
+            this.lblFileNameB.Text = "File Name";
             // 
             // splitContainer1
             // 
@@ -651,7 +695,7 @@ namespace GhostWriter
             this.txtGhostKeyboardData.Location = new System.Drawing.Point(6, 33);
             this.txtGhostKeyboardData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtGhostKeyboardData.Name = "txtGhostKeyboardData";
-            this.txtGhostKeyboardData.Size = new System.Drawing.Size(1039, 247);
+            this.txtGhostKeyboardData.Size = new System.Drawing.Size(1039, 243);
             this.txtGhostKeyboardData.TabIndex = 2;
             this.txtGhostKeyboardData.Text = "";
             this.toolTip.SetToolTip(this.txtGhostKeyboardData, "Ghost Keyboard Data");
@@ -667,10 +711,10 @@ namespace GhostWriter
             this.lblStepNumberB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblStepNumberB.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblStepNumberB.Location = new System.Drawing.Point(4, 3);
+            this.lblStepNumberB.Location = new System.Drawing.Point(289, 3);
             this.lblStepNumberB.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStepNumberB.Name = "lblStepNumberB";
-            this.lblStepNumberB.Size = new System.Drawing.Size(1034, 23);
+            this.lblStepNumberB.Size = new System.Drawing.Size(749, 23);
             this.lblStepNumberB.TabIndex = 2;
             // 
             // tabAppMonitor
@@ -720,11 +764,13 @@ namespace GhostWriter
             this.highlightingContextMenuStrip.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabPresentation.ResumeLayout(false);
+            this.tabPresentation.PerformLayout();
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.tabAutoTyping.ResumeLayout(false);
+            this.tabAutoTyping.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -789,7 +835,10 @@ namespace GhostWriter
         private System.Windows.Forms.ToolStripMenuItem monitorApplicationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-
+        private Label lblFileNameB;
+        private TextBox txtFileNameB;
+        private TextBox txtFileName;
+        private Label lblFileName;
     }
 }
 

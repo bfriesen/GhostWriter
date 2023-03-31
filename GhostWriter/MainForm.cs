@@ -49,11 +49,13 @@ namespace GhostWriter
                 () => SetForegroundWindow(Handle),
                 () => SetForegroundWindow(_targetApplication),
                 index => tabControl.SelectedIndex = index,
-                SwapForegroundWindows);
+                SwapForegroundWindows,
+                () => new WaitDialog() { Location = Location }.ShowDialog(this));
 
             foreach (var command in GhostKeyboard.Commands)
             {
-                commandContextMenuStrip.Items.Add(command).Click += CommandMenuItemOnClick;
+                command.Click += CommandMenuItemOnClick;
+                commandContextMenuStrip.Items.Add(command);
             }
 
             if (!Directory.Exists(Path.GetDirectoryName(_appDataPath)))
@@ -334,6 +336,11 @@ namespace GhostWriter
             }
         }
 
+        private void TxtFileNameTextChanged(object sender, EventArgs e)
+        {
+            _demo.Steps[_currentIndex].FileName = ((TextBox)sender).Text;
+        }
+
         private void TxtNotesTextChanged(object sender, EventArgs e)
         {
             _demo.Steps[_currentIndex].Notes = ((RichTextBox)sender).Rtf;
@@ -407,7 +414,8 @@ namespace GhostWriter
 
             SetForegroundWindow(_targetApplication);
 
-            _ghostKeyboard.Type(_demo.Steps[_currentIndex].GhostKeyboardData);
+            var currentStep = _demo.Steps[_currentIndex];
+            _ghostKeyboard.Type(currentStep.GhostKeyboardData, currentStep.FileName);
 
             if (presentationModeToolStripMenuItem.Checked)
             {
@@ -554,7 +562,7 @@ namespace GhostWriter
 
         private void LoadCurrentStep()
         {
-            LoadNotes();
+            LoadNotesAndFileName();
 
             txtExpectedCode.TextChanged -= TxtExpectedCodeTextChanged;
             txtGhostKeyboardData.TextChanged -= TxtGhostKeyboardDataTextChanged;
@@ -586,16 +594,22 @@ namespace GhostWriter
             txtGhostKeyboardData.TextChanged += TxtGhostKeyboardDataTextChanged;
         }
 
-        private void LoadNotes()
+        private void LoadNotesAndFileName()
         {
             txtNotes.TextChanged -= TxtNotesTextChanged;
             txtNotes2.TextChanged -= TxtNotesTextChanged;
+            txtFileName.TextChanged -= TxtFileNameTextChanged;
+            txtFileNameB.TextChanged -= TxtFileNameTextChanged;
 
             txtNotes.Rtf = _demo.Steps[_currentIndex].Notes;
             txtNotes2.Rtf = _demo.Steps[_currentIndex].Notes;
+            txtFileName.Text = _demo.Steps[_currentIndex].FileName;
+            txtFileNameB.Text = _demo.Steps[_currentIndex].FileName;
 
             txtNotes.TextChanged += TxtNotesTextChanged;
             txtNotes2.TextChanged += TxtNotesTextChanged;
+            txtFileName.TextChanged += TxtFileNameTextChanged;
+            txtFileNameB.TextChanged += TxtFileNameTextChanged;
         }
 
         private IList<IntPtr> GetTargetWindows()
@@ -707,9 +721,9 @@ namespace GhostWriter
             }
         }
 
-        private void TabControl_TabIndexChanged(object sender, EventArgs e)
+        private void TabControlSelected(object sender, EventArgs e)
         {
-            LoadNotes();
+            LoadNotesAndFileName();
         }
 
         private void BtnPushToApplication_Click(object sender, EventArgs e)
@@ -723,11 +737,17 @@ namespace GhostWriter
                     Clipboard.SetText(txtExpectedCode.Text);
                 }
 
-                _ghostKeyboard.TypeRaw("^(a){DEL}");
+                string? fileName = null;
+                if (!string.IsNullOrEmpty(txtFileName.Text) || !string.IsNullOrEmpty(txtFileNameB.Text))
+                {
+                    fileName = !string.IsNullOrEmpty(txtFileName.Text) ? txtFileName.Text : txtFileNameB.Text;
+                }
+
+                _ghostKeyboard.TypeRaw("{ESC}^(a){DEL}", fileName);
 
                 if (!string.IsNullOrEmpty(txtExpectedCode.Text))
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(200);
                     _ghostKeyboard.TypeRaw("^(v)");
                 }
 
@@ -959,7 +979,7 @@ namespace GhostWriter
             }
         }
 
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private void TabControlSelectedIndexChanged(object sender, EventArgs e)
         {
             _selectedTab = tabControl.TabPages[tabControl.SelectedIndex];
         }

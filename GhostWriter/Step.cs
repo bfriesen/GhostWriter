@@ -9,5 +9,6 @@ namespace GhostWriter
         public string GhostKeyboardData { get; set; }
         public string FinishedCode { get; set; }
         public string Notes { get; set; }
+        public string FileName { get; set; }
     }
 }
